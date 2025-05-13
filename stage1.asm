@@ -1,27 +1,10 @@
+%include "io.asm"
+
 COM1 equ 0x3f8
 COMTEST_TRIES equ 10000
 
 extern stage2_start
 extern stage2_size
-
-%macro outb 2
-    mov al, %2
-%if %1 > 255
-    mov dx, %1
-    out dx, al
-%else
-    out %1, al
-%endif
-%endmacro
-
-%macro inb 1
-%if %1 > 255
-    mov dx, %1
-    in al, dx
-%else
-    in al, %1
-%endif
-%endmacro
 
 ; Print one charecter in AL
 ; Uses: AX, BX
