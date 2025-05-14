@@ -15,3 +15,31 @@ So far:
  - Boots into 32 bit protected mode.
  - Prints nice messages both on-screen and serial port
  - Hangs
+
+## Usage
+
+What you need:
+ - NASM
+ - GCC
+ - Make
+
+If you have all of it, then build the image with
+
+```
+make
+```
+
+This will create the `usbloader.bin` file that you can write to a floppy and boot it.
+
+```
+dd if=usbloader.bin of=/dev/fdX
+```
+
+## Emulator (Bochs)
+
+For a minimal Bochs config you need the following in your `bochsrc` file.
+
+```
+floppya: 1_44=usbloader.bin, status=inserted
+boot: floppy
+```
