@@ -3,6 +3,9 @@
 COM1 equ 0x3f8
 COMTEST_TRIES equ 10000
 
+; Floppy controller Digital Output Register
+FLOPPY_DOR equ 0x3f2
+
 extern stage2_start
 extern stage2_size
 
@@ -188,6 +191,11 @@ hang:
     jmp $
 
 jump_stage2:
+    ; shutdown floppy motors
+    inb FLOPPY_DOR
+    and al, 0x0f    ; clear all 4 motor ON flags
+    outb FLOPPY_DOR, al
+
     mov ax, jump_stage
     call LogString
     jmp 0x0:stage2_start
