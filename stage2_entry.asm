@@ -50,6 +50,25 @@ gdt:
 gdt_end:
 
 [BITS 32]
+
+PIC1_COMMAND equ 0x20
+PIC1_DATA equ PIC1_COMMAND + 1
+PIC2_COMMAND equ 0xa0
+PIC2_DATA equ PIC2_COMMAND + 1
+
+PIC_EOI equ 0x20
+
+ICW1_ICW4 equ 0x01
+ICW1_INIT equ 0x10
+
+; Cascade, slave on IRQ2
+ICW3_M equ 0x4
+; slave identification code
+ICW3_S equ 0x2
+
+; Intel/Microprocessor mode
+ICW4_INTEL equ 0x1
+
 extern stage2_main
 
 protected_init:
@@ -77,6 +96,10 @@ a20_ena:
     outb 0x92, al
 
 a20_ok:
+    mov ah, 32  ; master PIC offset
+    mov al, 40  ; slave PIC offset
+    call PicRemap
+
     xor ax, ax
     mov di, ax  ; INT num
     lea eax, idt
@@ -94,12 +117,23 @@ idt_loop:
     jmp .idt_set
 
 .use_dummy:
+    ; Normal interrupts
     cmp di, 8   ; #DF
     je .use_dummy_ec
     cmp di, 17  ; #AC
     je .use_dummy_ec
     cmp di, 21  ; #CP
     je .use_dummy_ec
+
+    ; PIC interrupts
+    cmp di, 47  ; last slave PIC INT
+    ja .use_dummy_nrm
+    cmp di, 40  ; first slave PIC INT
+    jae .use_dummy_pic_slave
+    cmp di, 32  ; first master PIC INT
+    jae .use_dummy_pic_master
+
+    ; Normal interrupts again
     cmp di, 14
     ja .use_dummy_nrm
     cmp di, 10  ; #TS, #NP, #SS, #GP, #PF
@@ -117,6 +151,16 @@ idt_loop:
     lea ecx, isr_dummy_ec
     jmp .idt_set
 
+.use_dummy_pic_slave:
+    mov bx, 1
+    lea ecx, isr_dummy_pic_slave
+    jmp .idt_set
+
+.use_dummy_pic_master:
+    mov bx, 1
+    lea ecx, isr_dummy_pic_master
+    jmp .idt_set
+
 .use_dummy_nrm:
     mov bx, 1
     lea ecx, isr_dummy
@@ -132,7 +176,18 @@ idt_loop:
 
     lidt [idtr]
 
+    sti
+
     call stage2_main
+
+; ========== Interrupt handlers ==========
+
+%macro pic_send_eoi 1
+%if %1 >= 8
+    outb PIC2_COMMAND, PIC_EOI
+%endif
+    outb PIC1_COMMAND, PIC_EOI
+%endmacro
 
 isr_dummy:
     iret
@@ -143,6 +198,22 @@ isr_dummy_ec:
 
 isr_doublefault:
     hlt
+
+isr_dummy_pic_slave:
+    pusha
+    ; real PIC INT num doesn't matter for EOI
+    pic_send_eoi 8
+    popa
+    iret
+
+isr_dummy_pic_master:
+    pusha
+    ; real PIC INT num doesn't matter for EOI
+    pic_send_eoi 0
+    popa
+    iret
+
+; ========== Interrupt handlers end ==========
 
 ; Set an enty in the Interrupt Description Table
 ; Params: EAX: pointer to the entry
@@ -160,6 +231,43 @@ SetIdtEntry:
     or  dx, bx                  ; set trap optionally
     mov [eax + 4], edx
     ret
+
+; Params: AH: master PIC offset, bits 2:0 must be 0 (Interrupt Request Level)
+;         AL: slave PIC offset, bits 2:0 must be 0 (Interrupt Request Level)
+; Clobber: AX
+PicRemap:
+    break
+
+    push eax
+
+    ; init in cascade mode
+    ; ICW2, ICW3, ICW4 expected
+    outb PIC1_COMMAND, ICW1_INIT | ICW1_ICW4
+    outb PIC2_COMMAND, ICW1_INIT | ICW1_ICW4
+
+    ; ICW2
+    outb PIC1_DATA, [esp + 1]
+    outb PIC2_DATA, [esp]
+
+    pop eax
+
+    ; ICW3 Master
+    outb PIC1_DATA, ICW3_M
+
+    ; ICW3 Slave
+    outb PIC2_DATA, ICW3_S
+
+    ; ICW4
+    outb PIC1_DATA, ICW4_INTEL
+    outb PIC2_DATA, ICW4_INTEL
+
+    ; OCW1 Interrupt mask
+    ; unmask interrupts
+    outb PIC1_DATA, 0
+    outb PIC2_DATA, 0
+
+    ret
+
 
 ; Map interrupts to handlers
 ; format: interrupt no (byte), int=0/fault=1 (byte), handler pointer (32bit ptr)
