@@ -3,8 +3,5 @@ bochsrc
 bx_enh_dbg.ini
 *.out
 
-# bin
-*.o
-*.bin
-*.map
-*.elf
+# build artifacts
+build/
