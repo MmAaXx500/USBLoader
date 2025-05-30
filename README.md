@@ -29,10 +29,10 @@ If you have all of it, then build the image with
 make
 ```
 
-This will create the `usbloader.bin` file that you can write to a floppy and boot it.
+This will create the `build/usbloader.bin` file that you can write to a floppy and boot it.
 
 ```
-dd if=usbloader.bin of=/dev/fdX
+dd if=build/usbloader.bin of=/dev/fdX
 ```
 
 ## Emulator (Bochs)
@@ -40,6 +40,6 @@ dd if=usbloader.bin of=/dev/fdX
 For a minimal Bochs config you need the following in your `bochsrc` file.
 
 ```
-floppya: 1_44=usbloader.bin, status=inserted
+floppya: 1_44=build/usbloader.bin, status=inserted
 boot: floppy
 ```
