@@ -19,8 +19,8 @@ TARGET := $(BUILD)/usbloader.bin
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(LD) $(LDFLAGS) -o $(BUILD)/kernel.elf
-	$(OBJCOPY) -O binary $(BUILD)/kernel.elf $@
+	$(LD) $(LDFLAGS) -o $(BUILD)/usbloader.elf
+	$(OBJCOPY) -O binary $(BUILD)/usbloader.elf $@
 
 $(BUILD)/%.o: %.asm $(BUILD)/%.d | $(BUILD)
 # NASM produces a dep (.d) file that is newer than the .o
