@@ -19,7 +19,7 @@ TARGET := $(BUILD)/usbloader.bin
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(LD) $(LDFLAGS) -o $(BUILD)/usbloader.elf
+	$(LD) $(LDFLAGS) -o $(BUILD)/usbloader.elf $(OBJS)
 	$(OBJCOPY) -O binary $(BUILD)/usbloader.elf $@
 
 $(BUILD)/%.o: %.asm $(BUILD)/%.d | $(BUILD)

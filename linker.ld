@@ -5,13 +5,12 @@ SECTIONS {
     . = 0x8000;
     stage2_start = .;
     .text_s2e : AT(512) { stage2_entry.o(.text) }
-    .text_s2 : { stage2.o(.text) }
-    .data_s2 : { stage2.o(.data) }
-    .rodata_s2 : { stage2.o(.rodata) }
+    .text_s2 : { *(.text) }
+    .data_s2 : { *(.data) }
+    .rodata_s2 : { *(.rodata) }
     stage2_end = .;
     stage2_size = stage2_end - stage2_start;
     .bss_s2 (NOLOAD) : {
-        stage2_entry.o(.bss)
-        stage2.o(.bss)
+        *(.bss)
     }
 }
