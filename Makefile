@@ -4,16 +4,13 @@ OBJCOPY = objcopy
 NASMFLAGS    = -f elf
 NASMDEPFLAGS = -MT $@ -MD -MP -MF $(BUILD)/$*.d
 
-CFLAGS    = -m32 -ffreestanding -nostdlib -fno-pic -Wall -Wextra
-CFLAGS    = -m32 -ffreestanding -nostdlib -fno-pic -Wall -Wextra -Werror -Wconversion
-CFLAGS    = -m32 -ffreestanding -nostdlib -fno-pic -fno-stack-protector -Wall -Wextra -Werror -Wconversion
 CFLAGS    = -m32 -march=i486 -mtune=i686 -ffreestanding -nostdlib -fno-pic -fno-stack-protector -Wall -Wextra -Werror -Wconversion
 CDEPFLAGS = -MT $@ -MMD -MP -MF $(BUILD)/$*.d
 
 LDFLAGS = -m elf_i386 -T linker.ld --no-warn-rwx-segments -Map=$(BUILD)/usbloader.map -L$(BUILD)
 
 BUILD  := build
-SRCS   := stage1.asm stage2_entry.asm stage2.c
+SRCS   := stage1.asm stage2_entry.asm stage2.c print.c pci21.c
 OBJS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).o)
 DEPS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).d)
 TARGET := $(BUILD)/usbloader.bin
