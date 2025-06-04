@@ -13,7 +13,7 @@ Currently, most of the functionality is not implemented, so booting from USB is 
 So far:
 
  - Boots into 32 bit protected mode.
- - Prints nice messages both on-screen and serial port
+ - Prints PCI device information
  - Hangs
 
 ## Usage
