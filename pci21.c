@@ -60,6 +60,13 @@ static void pci_read_device(const uint8_t bus, const uint8_t device,
 		header->latency_timer = pci_read_byte(bus, device, func, 0xd);
 		header->bist = pci_read_byte(bus, device, func, 0xf);
 
+		// filter non-existing functions
+		// PCI Specification 6.2.1. Device Identification
+		// In "Header Type" and "Class Code": All other/unspecified encodings
+		// are reserved.
+		if (header->header_type == 0xff || header->class_code == 0xff)
+			continue;
+
 		cb(bus, device, func, header, userdata);
 	}
 }
