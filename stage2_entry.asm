@@ -236,8 +236,6 @@ SetIdtEntry:
 ;         AL: slave PIC offset, bits 2:0 must be 0 (Interrupt Request Level)
 ; Clobber: AX
 PicRemap:
-    break
-
     push eax
 
     ; init in cascade mode
