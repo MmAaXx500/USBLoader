@@ -5,6 +5,7 @@ NASMFLAGS    = -f elf
 NASMDEPFLAGS = -MT $@ -MD -MP -MF $(BUILD)/$*.d
 
 CFLAGS    = -m32 -ffreestanding -nostdlib -fno-pic -Wall -Wextra
+CFLAGS    = -m32 -ffreestanding -nostdlib -fno-pic -Wall -Wextra -Werror -Wconversion
 CDEPFLAGS = -MT $@ -MMD -MP -MF $(BUILD)/$*.d
 
 LDFLAGS = -m elf_i386 -T linker.ld --no-warn-rwx-segments -Map=$(BUILD)/usbloader.map -L$(BUILD)
