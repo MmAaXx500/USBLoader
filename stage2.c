@@ -25,7 +25,11 @@ static void on_pci_dev_found(const uint8_t bus, const uint8_t device,
 	print_string(itoa(dev_header->class_code, buf, 16));
 	print_string(":");
 	print_string(itoa(dev_header->subclass, buf, 16));
-	print_string("]\n");
+	print_string("]");
+
+	print_string(" if ");
+	print_string(itoa(dev_header->prog_if, buf, 16));
+	print_string("\n");
 }
 
 void stage2_main(void) {
