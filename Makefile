@@ -10,7 +10,7 @@ CDEPFLAGS = -MT $@ -MMD -MP -MF $(BUILD)/$*.d
 LDFLAGS = -m elf_i386 -T linker.ld --no-warn-rwx-segments -Map=$(BUILD)/usbloader.map -L$(BUILD)
 
 BUILD  := build
-SRCS   := stage1.asm stage2_entry.asm stage2.c print.c pci21.c
+SRCS   := stage1.asm stage2_entry.asm stage2.c print.c pci21.c pit.c
 OBJS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).o)
 DEPS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).d)
 TARGET := $(BUILD)/usbloader.bin

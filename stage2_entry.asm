@@ -71,6 +71,9 @@ ICW4_INTEL equ 0x1
 
 extern stage2_main
 
+; pit.c PIT timer interrupt handler
+extern pit_isr_timer
+
 protected_init:
     mov ax, 0x10
     mov ds, ax
@@ -213,6 +216,14 @@ isr_dummy_pic_master:
     popa
     iret
 
+isr_timer:
+    pusha
+    call pit_isr_timer
+    pic_send_eoi 0
+    popa
+    iret
+
+
 ; ========== Interrupt handlers end ==========
 
 ; Set an enty in the Interrupt Description Table
@@ -272,6 +283,9 @@ PicRemap:
 interrupt_map:
     db 8, 1
     dd isr_doublefault
+
+    db 32, 1
+    dd isr_timer
 
     db 0, 0
     dd 0
