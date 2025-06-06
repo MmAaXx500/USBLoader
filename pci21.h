@@ -40,6 +40,7 @@ struct pci_header {
 typedef void (*pci_device_cb_t)(const uint8_t bus, const uint8_t device,
                                 const uint8_t func,
                                 const struct pci_header *dev_header,
+                                struct pci_header *dev_header,
                                 void *userdata);
 
 void pci_enumerate_devices(pci_device_cb_t cb, void *userdata);

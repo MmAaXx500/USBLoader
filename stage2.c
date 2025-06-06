@@ -3,6 +3,7 @@
 
 static void on_pci_dev_found(const uint8_t bus, const uint8_t device,
                       const uint8_t func, const struct pci_header *dev_header,
+                      const uint8_t func, struct pci_header *dev_header,
                       void *userdata) {
 	(void)userdata; // unused
 
