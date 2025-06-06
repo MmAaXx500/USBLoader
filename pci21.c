@@ -45,7 +45,7 @@ static void pci_read_device(const uint8_t bus, const uint8_t device,
 		return;
 
 	header->header_type = pci_read_byte(bus, device, 0, 0xe);
-	if ((header->header_type & 0x80) != 0)
+	if ((header->header_type & PCI_HEADER_TYPE_MULTIFUNC_MASK) != 0)
 		max_funcs = 8;
 
 	for (uint8_t func = 0; func < max_funcs; func++) {
@@ -66,6 +66,29 @@ static void pci_read_device(const uint8_t bus, const uint8_t device,
 		// are reserved.
 		if (header->header_type == 0xff || header->class_code == 0xff)
 			continue;
+
+		if ((header->header_type & PCI_HEADER_TYPE_TYPE_MASK) == 0) {
+			for (uint8_t bar_off = 0; bar_off < PCI_HEADER_TYPE00_BAR_ADDRS;
+			     bar_off++)
+				header->u.type00.bar[bar_off] =
+				    pci_read_dword(bus, device, func, 0x10 + bar_off);
+
+			header->u.type00.cardbus_cis =
+			    pci_read_dword(bus, device, func, 0x28);
+			header->u.type00.subsystem_vid =
+			    pci_read_word(bus, device, func, 0x2c);
+			header->u.type00.subsystem_id =
+			    pci_read_word(bus, device, func, 0x2e);
+			header->u.type00.rom_base_addr =
+			    pci_read_word(bus, device, func, 0x30);
+			header->u.type00.interrupt_line =
+			    pci_read_byte(bus, device, func, 0x3c);
+			header->u.type00.interrupt_pin =
+			    pci_read_byte(bus, device, func, 0x3d);
+			header->u.type00.min_grant = pci_read_byte(bus, device, func, 0x3e);
+			header->u.type00.max_latency =
+			    pci_read_byte(bus, device, func, 0x3f);
+		}
 
 		cb(bus, device, func, header, userdata);
 	}
