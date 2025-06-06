@@ -3,10 +3,10 @@
 #include <stdint.h>
 
 struct pci_header {
-	uint16_t device_id;
 	uint16_t vendor_id;
-	uint16_t status;
+	uint16_t device_id;
 	uint16_t command;
+	uint16_t status;
 	uint8_t rev_id;
 	uint8_t prog_if;
 	uint8_t subclass;
