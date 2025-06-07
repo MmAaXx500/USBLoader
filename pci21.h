@@ -44,9 +44,9 @@ struct pci_dev {
 	struct pci_header header;
 };
 
-uint32_t pci_read_dword(const struct pci_dev *dev, const uint8_t offset);
-uint16_t pci_read_word(const struct pci_dev *dev, const uint8_t offset);
-uint8_t pci_read_byte(const struct pci_dev *dev, const uint8_t offset);
+uint32_t pci_read_32(const struct pci_dev *dev, const uint8_t offset);
+uint16_t pci_read_16(const struct pci_dev *dev, const uint8_t offset);
+uint8_t pci_read_8(const struct pci_dev *dev, const uint8_t offset);
 
 typedef void (*pci_device_cb_t)(struct pci_dev *dev, void *userdata);
 
