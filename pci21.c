@@ -5,9 +5,7 @@
 #define PCI_CONFIG_ADDRESS 0xcf8
 #define PCI_CONFIG_DATA    0xcfc
 
-static uint32_t pci_read_dword(const struct pci_dev *dev,
-                               const uint8_t offset) {
-	uint8_t reg_num = offset >> 2;
+static uint32_t get_pci_dev_addr(const struct pci_dev *dev, const uint8_t reg) {
 	uint32_t addr = 0;
 
 	addr |= (uint32_t)1 << 31;                    // bit 31 enable bit
@@ -15,22 +13,25 @@ static uint32_t pci_read_dword(const struct pci_dev *dev,
 	addr |= (uint32_t)dev->bus << 16;             // bits 16-23
 	addr |= (uint32_t)(dev->device & 0x1f) << 11; // bits 11-15
 	addr |= (uint32_t)(dev->func & 0x07) << 8;    // bits 8-10
-	addr |= (uint32_t)reg_num << 2;               // bits 2-7
-	// bits 0-1 is 0 for 32bit aligned access
+	addr |= (uint32_t)reg & 0xfc;                 // bits 0-7
 
-	outl(PCI_CONFIG_ADDRESS, addr);
+	return addr;
+}
 
-	return inl(PCI_CONFIG_DATA);
+static uint32_t pci_read_dword(const struct pci_dev *dev,
+                               const uint8_t offset) {
+	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
+	return inl(PCI_CONFIG_DATA); // no offset needed, reading 32 bits
 }
 
 static uint16_t pci_read_word(const struct pci_dev *dev, const uint8_t offset) {
-	uint32_t tmp = pci_read_dword(dev, offset);
-	return (tmp >> ((offset & 0x02) * 8)) & 0xffff;
+	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
+	return inw(PCI_CONFIG_DATA + (offset & 0x3));
 }
 
 static uint8_t pci_read_byte(const struct pci_dev *dev, const uint8_t offset) {
-	uint32_t tmp = pci_read_dword(dev, offset);
-	return (tmp >> ((offset & 0x03) * 8)) & 0xff;
+	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
+	return inb(PCI_CONFIG_DATA + (offset & 0x3));
 }
 
 static void pci_read_device(const uint8_t bus, const uint8_t device,
