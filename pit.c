@@ -56,7 +56,7 @@
 // largest whole ms
 #define PIT_MAX_MS (1000 * 65536 / PIT_HZ)
 
-static bool timer_int_fired = false;
+static volatile bool timer_int_fired = false;
 
 void sleep(uint32_t ms) {
 	uint32_t pit_ms = ms;
