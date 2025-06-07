@@ -1,6 +1,8 @@
 BasedOnStyle: LLVM
 
+AlignConsecutiveMacros: AcrossComments
 AlignOperands: Align
+BreakBeforeInlineASMColon: Always
 BreakBeforeBinaryOperators: NonAssignment
 IndentWidth: 4
 TabWidth: 4

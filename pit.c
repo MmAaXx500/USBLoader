@@ -24,27 +24,27 @@
 
 // Read/Write Select
 // Counter Latch Command
-#define TCW_RW_LATCH 0
+#define TCW_RW_LATCH   0
 // Read/Write Least Significant Byte
-#define TCW_RW_LSB (1 << 4)
+#define TCW_RW_LSB     (1 << 4)
 // Read/Write Most Significant Byte
-#define TCW_RW_MSB (2 << 4)
+#define TCW_RW_MSB     (2 << 4)
 // Read/Write LSB then MSB
 #define TCW_RW_LSB_MSB (3 << 4)
 
 // Counter Mode Selection
 // Out signal on end of count
-#define TCW_MODE_INT_ON_0 0
+#define TCW_MODE_INT_ON_0    0
 // Hardware retriggerable one-shot
 #define TCW_MODE_HW_ONE_SHOT (1 << 1)
 // Rate generator
-#define TCW_MODE_RATE_GEN (2 << 1)
+#define TCW_MODE_RATE_GEN    (2 << 1)
 // Square wave output
 #define TCW_MODE_SQUARE_WAVE (3 << 1)
 // Software triggered strobe
-#define TCW_MODE_SW_STROBE (4 << 1)
+#define TCW_MODE_SW_STROBE   (4 << 1)
 // Hardware triggered strobe
-#define TCW_MODE_HW_STROBE (5 << 1)
+#define TCW_MODE_HW_STROBE   (5 << 1)
 
 // Binary/BCD Countdown Select
 #define TCW_BINARY 0
@@ -52,7 +52,7 @@
 
 // ========================================================
 
-#define PIT_HZ 1193182
+#define PIT_HZ     1193182
 // largest whole ms
 #define PIT_MAX_MS (1000 * 65536 / PIT_HZ)
 

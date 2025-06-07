@@ -1,15 +1,15 @@
 #include "print.h"
 #include "io.h"
 
-#define VGA_WIDTH 80
+#define VGA_WIDTH  80
 #define VGA_HEIGHT 25
 
 #define VGA_COLOR_MEM 0xB8000
 
 #define VGA_LIGHT_GRAY 0x07
 
-#define CRTC_ADDRESS 0x3d4
-#define CRTC_DATA 0x3d5
+#define CRTC_ADDRESS     0x3d4
+#define CRTC_DATA        0x3d5
 #define CRTC_CURS_LOC_HI 0xe
 #define CRTC_CURS_LOC_LO 0xf
 

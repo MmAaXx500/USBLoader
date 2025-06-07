@@ -3,7 +3,7 @@
 
 // PCI Configuration Space Access Mechanism #1 IO locations
 #define PCI_CONFIG_ADDRESS 0xcf8
-#define PCI_CONFIG_DATA 0xcfc
+#define PCI_CONFIG_DATA    0xcfc
 
 static uint32_t pci_read_dword(const uint8_t bus, const uint8_t device,
                                const uint8_t func, const uint8_t offset) {
