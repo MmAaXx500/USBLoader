@@ -48,6 +48,10 @@ uint32_t pci_read_32(const struct pci_dev *dev, const uint8_t offset);
 uint16_t pci_read_16(const struct pci_dev *dev, const uint8_t offset);
 uint8_t pci_read_8(const struct pci_dev *dev, const uint8_t offset);
 
+void pci_write_32 (const struct pci_dev *dev, const uint8_t offset, const uint32_t data);
+void pci_write_16 (const struct pci_dev *dev, const uint8_t offset, const uint16_t data);
+void pci_write_8 (const struct pci_dev *dev, const uint8_t offset, const uint8_t data);
+
 typedef void (*pci_device_cb_t)(struct pci_dev *dev, void *userdata);
 
 void pci_enumerate_devices(pci_device_cb_t cb, void *userdata);
