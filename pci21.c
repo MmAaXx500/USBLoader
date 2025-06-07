@@ -18,18 +18,18 @@ static uint32_t get_pci_dev_addr(const struct pci_dev *dev, const uint8_t reg) {
 	return addr;
 }
 
-static uint32_t pci_read_dword(const struct pci_dev *dev,
+uint32_t pci_read_dword(const struct pci_dev *dev,
                                const uint8_t offset) {
 	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
 	return inl(PCI_CONFIG_DATA); // no offset needed, reading 32 bits
 }
 
-static uint16_t pci_read_word(const struct pci_dev *dev, const uint8_t offset) {
+uint16_t pci_read_word(const struct pci_dev *dev, const uint8_t offset) {
 	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
 	return inw(PCI_CONFIG_DATA + (offset & 0x3));
 }
 
-static uint8_t pci_read_byte(const struct pci_dev *dev, const uint8_t offset) {
+uint8_t pci_read_byte(const struct pci_dev *dev, const uint8_t offset) {
 	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
 	return inb(PCI_CONFIG_DATA + (offset & 0x3));
 }
