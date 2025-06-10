@@ -13,4 +13,11 @@ SECTIONS {
     .bss_s2 (NOLOAD) : {
         *(.bss)
     }
+
+    /DISCARD/ : {
+        *(.comment)
+        *(.note*)
+        *(.eh_frame*)
+        *(.debug*)
+    }
 }
