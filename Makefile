@@ -10,7 +10,7 @@ CDEPFLAGS   = -MT $@ -MMD -MP -MF $(BUILD)/$*.d
 BASE_LDFLAGS = -m32 -nostdlib -lgcc -no-pie -T linker.ld -L$(BUILD) -Wl,-Map=$(BUILD)/usbloader.map,--no-warn-rwx-segments,--build-id=none
 
 BUILD  := build
-SRCS   := stage1.asm stage2_entry.asm stage2.c print.c pci21.c pit.c uhci.c
+SRCS   := stage1.asm stage2_entry.asm stage2.c print.c pci21.c pit.c
 OBJS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).o)
 DEPS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).d)
 TARGET := $(BUILD)/usbloader.bin
