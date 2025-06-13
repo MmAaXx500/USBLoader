@@ -18,8 +18,7 @@ static uint32_t get_pci_dev_addr(const struct pci_dev *dev, const uint8_t reg) {
 	return addr;
 }
 
-uint32_t pci_read_32(const struct pci_dev *dev,
-                               const uint8_t offset) {
+uint32_t pci_read_32(const struct pci_dev *dev, const uint8_t offset) {
 	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
 	return inl(PCI_CONFIG_DATA); // no offset needed, reading 32 bits
 }
@@ -34,17 +33,20 @@ uint8_t pci_read_8(const struct pci_dev *dev, const uint8_t offset) {
 	return inb(PCI_CONFIG_DATA + (offset & 0x3));
 }
 
-void pci_write_32 (const struct pci_dev *dev, const uint8_t offset, const uint32_t data) {
+void pci_write_32(const struct pci_dev *dev, const uint8_t offset,
+                  const uint32_t data) {
 	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
 	outl(PCI_CONFIG_DATA, data);
 }
 
-void pci_write_16 (const struct pci_dev *dev, const uint8_t offset, const uint16_t data) {
+void pci_write_16(const struct pci_dev *dev, const uint8_t offset,
+                  const uint16_t data) {
 	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
 	outw(PCI_CONFIG_DATA + (offset & 0x3), data);
 }
 
-void pci_write_8 (const struct pci_dev *dev, const uint8_t offset, const uint8_t data) {
+void pci_write_8(const struct pci_dev *dev, const uint8_t offset,
+                 const uint8_t data) {
 	outl(PCI_CONFIG_ADDRESS, get_pci_dev_addr(dev, offset & 0xfc));
 	outb(PCI_CONFIG_DATA + (offset & 0x3), data);
 }
