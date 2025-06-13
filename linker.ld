@@ -12,6 +12,11 @@ SECTIONS {
     stage2_size = stage2_end - stage2_start;
     .bss_s2 (NOLOAD) : {
         *(.bss)
+        . = ALIGN(16);
+        heap_start = .;
+        . += 0x4000;
+        heap_end = .;
+        heap_size = heap_end - heap_start;
     }
 
     /DISCARD/ : {
