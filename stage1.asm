@@ -93,7 +93,7 @@ start2:
     mov ax, read_disk
     call LogString
 
-    ; calcualte stage2 size in sectors
+    ; calculate stage2 size in sectors
     mov ax, stage2_size
     add ax, 512 + 1
     shr ax, 9   ; div 512
@@ -132,12 +132,12 @@ read_loop:
     cmp cl, 18
     je .sector_roll
     inc cl      ; next sector
-.cylinder_check:
-    cmp ch, 80
-    jnb .cylinder_roll
 .head_check:
     cmp dh, 2
     jnb .head_roll
+.cylinder_check:
+    cmp ch, 80
+    jnb .cylinder_roll
     jmp .cont_read
 
 ; ========== ROLLOVERS ==========
@@ -151,16 +151,17 @@ read_loop:
 
 .sector_roll:
     mov cl, 1   ; back to sector 1
+    inc dh      ; next head
+    jmp .head_check
+
+.head_roll:
+    xor dh, dh  ; back to head 0
     inc ch      ; next cylinder
     jmp .cylinder_check
 
 .cylinder_roll:
     xor ch, ch  ; back to cylinder 0
-    inc dh      ; next head
-    jmp .head_check
-
-.head_roll:
-    xor dh, dh
+    inc ch      ; next cylinder
 
 ; ========== ROLLOVERS END ==========
 
