@@ -1,5 +1,6 @@
 #include "print.h"
 #include "io.h"
+#include "pci21.h"
 
 #define VGA_WIDTH  80
 #define VGA_HEIGHT 25
@@ -84,6 +85,32 @@ void print_string(const char *string) {
 	}
 
 	move_vga_cursor(curs_col, curs_row);
+}
+
+void print_pci_dev(const struct pci_dev* pci_dev){
+	char buf[8];
+	print_string(itoa(pci_dev->bus, buf, 10));
+	print_string(":");
+	print_string(itoa(pci_dev->device, buf, 10));
+	print_string(".");
+	print_string(itoa(pci_dev->func, buf, 10));
+
+	print_string(" ");
+	print_string(itoa(pci_dev->header.vendor_id, buf, 16));
+	print_string(":");
+	print_string(itoa(pci_dev->header.device_id, buf, 16));
+
+	print_string(" rev ");
+	print_string(itoa(pci_dev->header.rev_id, buf, 16));
+
+	print_string(" [");
+	print_string(itoa(pci_dev->header.class_code, buf, 16));
+	print_string(":");
+	print_string(itoa(pci_dev->header.subclass, buf, 16));
+	print_string("]");
+
+	print_string(" if ");
+	print_string(itoa(pci_dev->header.prog_if, buf, 16));
 }
 
 void init_output(void) {

@@ -1,34 +1,12 @@
 #include "pci21.h"
+#include "pit.h"
 #include "print.h"
+#include "uhci.h"
 
-static void on_pci_dev_found(const uint8_t bus, const uint8_t device,
-                             const uint8_t func, struct pci_header *dev_header,
-                             void *userdata) {
+static void on_pci_dev_found(struct pci_dev *dev, void *userdata) {
 	(void)userdata; // unused
 
-	char buf[8];
-	print_string(itoa(dev->bus, buf, 10));
-	print_string(":");
-	print_string(itoa(dev->device, buf, 10));
-	print_string(".");
-	print_string(itoa(dev->func, buf, 10));
-
-	print_string(" ");
-	print_string(itoa(dev->header.vendor_id, buf, 16));
-	print_string(":");
-	print_string(itoa(dev->header.device_id, buf, 16));
-
-	print_string(" rev ");
-	print_string(itoa(dev->header.rev_id, buf, 16));
-
-	print_string(" [");
-	print_string(itoa(dev->header.class_code, buf, 16));
-	print_string(":");
-	print_string(itoa(dev->header.subclass, buf, 16));
-	print_string("]");
-
-	print_string(" if ");
-	print_string(itoa(dev->header.prog_if, buf, 16));
+	print_pci_dev(dev);
 	print_string("\n");
 }
 
