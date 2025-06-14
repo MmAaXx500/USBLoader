@@ -23,6 +23,5 @@ SECTIONS {
         *(.comment)
         *(.note*)
         *(.eh_frame*)
-        *(.debug*)
     }
 }
