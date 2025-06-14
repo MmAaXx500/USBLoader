@@ -7,7 +7,7 @@ TEST_LD = $(CC)
 BASE_NASMFLAGS = -f elf
 NASMDEPFLAGS   = -MT $@ -MD -MP -MF $(@:.o=.d)
 
-BASE_CFLAGS = -m32 -march=i486 -mtune=i686 -ffreestanding -fno-pic -fno-stack-protector -Wall -Wextra -Werror -Wconversion
+BASE_CFLAGS = -m32 -march=i486 -mtune=i686 -ffreestanding -fno-pic -fno-stack-protector -fno-asynchronous-unwind-tables -Wall -Wextra -Werror -Wconversion
 TEST_BASE_CFLAGS = -m32 -g  -Wall -Wextra -Werror -Wconversion
 CDEPFLAGS   = -MT $@ -MMD -MP -MF $(@:.o=.d)
 
