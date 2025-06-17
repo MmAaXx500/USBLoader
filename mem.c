@@ -16,8 +16,8 @@
  * - Other memory related functions: `memcopy()`
  */
 
-extern uint8_t *heap_start;
-extern uint8_t *heap_end;
+extern uint8_t heap_start[];
+extern uint8_t heap_end[];
 
 struct free_block *free_block_head = 0;
 

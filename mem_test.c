@@ -8,11 +8,11 @@
 
 uint8_t test_mem[TEST_MEM_SIZE] __attribute__((aligned(16)));
 
-// Heap pointers for mem.c
-uint8_t *heap_start = test_mem;
-uint8_t *heap_end = test_mem + TEST_MEM_SIZE;
-
 static const uint32_t default_align = sizeof(void *);
+
+// Dummy synbols as no linker script is used
+uint8_t heap_start[1];
+uint8_t heap_end[1];
 
 /**
  * Align ptr to the specified alignment
@@ -35,13 +35,13 @@ static void *align_ptr(const void *ptr, uint32_t align) {
  * @return number of objects
  */
 static uint32_t max_object_count(uint32_t size, uint32_t align) {
-	uint8_t *start = heap_start + sizeof(struct block_header);
+	uint8_t *start = test_mem + sizeof(struct block_header);
 	uint8_t *addr = align_ptr(start, align);
 	uint32_t count = 0;
 
-	while (addr < heap_end) {
+	while (addr <= &test_mem[TEST_MEM_SIZE]) {
 		addr += size;
-		if (addr >= heap_end)
+		if (addr > &test_mem[TEST_MEM_SIZE])
 			break;
 
 		count++;
@@ -53,8 +53,11 @@ static uint32_t max_object_count(uint32_t size, uint32_t align) {
 }
 
 void setUp(void) {
-	memset(heap_start, 0, TEST_MEM_SIZE);
-	init_memory();
+	memset(test_mem, 0, TEST_MEM_SIZE);
+
+	free_block_head = (struct free_block *)test_mem;
+	free_block_head->size = TEST_MEM_SIZE;
+	free_block_head->next = 0;
 }
 
 void tearDown(void) {}
