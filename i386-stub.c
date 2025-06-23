@@ -97,9 +97,11 @@
  * external low-level support routines
  */
 
-extern void putDebugChar();     /* write a single character      */
-extern int getDebugChar();      /* read and return a single char */
-extern void exceptionHandler(); /* assign an exception handler   */
+extern void putDebugChar(char ch); /* write a single character      */
+extern int getDebugChar(void);         /* read and return a single char */
+extern void
+exceptionHandler(int exception_number,
+                 void *exception_address); /* assign an exception handler   */
 
 /************************************************************************/
 /* BUFMAX defines the maximum number of characters in inbound/outbound buffers*/
@@ -444,9 +446,7 @@ __asm__("		call  _handle_exception"); /* this never returns */
 
 void _returnFromException() { return_to_prog(); }
 
-int hex(ch)
-char ch;
-{
+int hex(char ch) {
 	if ((ch >= 'a') && (ch <= 'f'))
 		return (ch - 'a' + 10);
 	if ((ch >= '0') && (ch <= '9'))
@@ -576,12 +576,7 @@ void set_char(char *addr, int val) { *addr = val; }
 /* return a pointer to the last char put in buf (null) */
 /* If MAY_FAULT is non-zero, then we should set mem_err in response to
    a fault; if zero treat a fault like any other fault in the stub.  */
-char *mem2hex(mem, buf, count, may_fault)
-char *mem;
-char *buf;
-int count;
-int may_fault;
-{
+char *mem2hex(char *mem, char *buf, int count, int may_fault) {
 	int i;
 	unsigned char ch;
 
@@ -602,12 +597,7 @@ int may_fault;
 
 /* convert the hex array pointed to by buf into binary to be placed in mem */
 /* return a pointer to the character AFTER the last byte written */
-char *hex2mem(buf, mem, count, may_fault)
-char *buf;
-char *mem;
-int count;
-int may_fault;
-{
+char *hex2mem(char *buf, char *mem, int count, int may_fault) {
 	int i;
 	unsigned char ch;
 
