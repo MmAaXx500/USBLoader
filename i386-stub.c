@@ -463,7 +463,7 @@ static char remcomOutBuffer[BUFMAX];
 /* scan for the sequence $<data>#<checksum>     */
 
 unsigned char *getpacket(void) {
-	unsigned char *buffer = &remcomInBuffer[0];
+	unsigned char *buffer = (unsigned char *)&remcomInBuffer[0];
 	unsigned char checksum;
 	unsigned char xmitcsum;
 	int count;
@@ -539,7 +539,7 @@ void putpacket(unsigned char *buffer) {
 		checksum = 0;
 		count = 0;
 
-		while (ch = buffer[count]) {
+		while ((ch = buffer[count])) {
 			putDebugChar(ch);
 			checksum += ch;
 			count += 1;
@@ -699,7 +699,6 @@ void handle_exception(int exceptionVector) {
 	int sigval, stepping;
 	int addr, length;
 	char *ptr;
-	int newPC;
 	char print_buf[16];
 
 	gdb_i386vector = exceptionVector;
@@ -740,13 +739,13 @@ void handle_exception(int exceptionVector) {
 
 	*ptr = '\0';
 
-	putpacket(remcomOutBuffer);
+	putpacket((unsigned char *)remcomOutBuffer);
 
 	stepping = 0;
 
 	while (1 == 1) {
 		remcomOutBuffer[0] = 0;
-		ptr = getpacket();
+		ptr = (char *)getpacket();
 
 		switch (*ptr++) {
 		case '?':
@@ -788,7 +787,12 @@ void handle_exception(int exceptionVector) {
 					if (hexToInt(&ptr, &length)) {
 						ptr = 0;
 						mem_err = 0;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+						// Assuming that 32bit pointers fit into an int
 						mem2hex((char *)addr, remcomOutBuffer, length, 1);
+#pragma GCC diagnostic pop
+
 						if (mem_err) {
 							strcpy(remcomOutBuffer, "E03");
 							print_string("memory fault");
@@ -808,7 +812,12 @@ void handle_exception(int exceptionVector) {
 					if (hexToInt(&ptr, &length))
 						if (*(ptr++) == ':') {
 							mem_err = 0;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+							// Assuming that 32bit pointers fit into an int
 							hex2mem(ptr, (char *)addr, length, 1);
+#pragma GCC diagnostic pop
 
 							if (mem_err) {
 								strcpy(remcomOutBuffer, "E03");
@@ -833,8 +842,6 @@ void handle_exception(int exceptionVector) {
 			if (hexToInt(&ptr, &addr))
 				registers[PC] = addr;
 
-			newPC = registers[PC];
-
 			/* clear the trace bit */
 			registers[PS] &= 0xfffffeff;
 
@@ -856,7 +863,7 @@ void handle_exception(int exceptionVector) {
 		} /* switch */
 
 		/* reply to the request */
-		putpacket(remcomOutBuffer);
+		putpacket((unsigned char *)remcomOutBuffer);
 	}
 }
 
