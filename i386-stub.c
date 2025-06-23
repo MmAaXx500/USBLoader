@@ -142,33 +142,33 @@ return_to_prog ();
 /* Restore the program's registers (including the stack pointer, which
    means we get the right stack and don't have to worry about popping our
    return address and any stack frames and so on) and return.  */
-asm(".text");
-asm(".globl _return_to_prog");
-asm("_return_to_prog:");
-asm("        movw _registers+44, %ss");
-asm("        movl _registers+16, %esp");
-asm("        movl _registers+4, %ecx");
-asm("        movl _registers+8, %edx");
-asm("        movl _registers+12, %ebx");
-asm("        movl _registers+20, %ebp");
-asm("        movl _registers+24, %esi");
-asm("        movl _registers+28, %edi");
-asm("        movw _registers+48, %ds");
-asm("        movw _registers+52, %es");
-asm("        movw _registers+56, %fs");
-asm("        movw _registers+60, %gs");
-asm("        movl _registers+36, %eax");
-asm("        pushl %eax");  /* saved eflags */
-asm("        movl _registers+40, %eax");
-asm("        pushl %eax");  /* saved cs */
-asm("        movl _registers+32, %eax");
-asm("        pushl %eax");  /* saved eip */
-asm("        movl _registers, %eax");
+__asm__(".text");
+__asm__(".globl _return_to_prog");
+__asm__("_return_to_prog:");
+__asm__("        movw _registers+44, %ss");
+__asm__("        movl _registers+16, %esp");
+__asm__("        movl _registers+4, %ecx");
+__asm__("        movl _registers+8, %edx");
+__asm__("        movl _registers+12, %ebx");
+__asm__("        movl _registers+20, %ebp");
+__asm__("        movl _registers+24, %esi");
+__asm__("        movl _registers+28, %edi");
+__asm__("        movw _registers+48, %ds");
+__asm__("        movw _registers+52, %es");
+__asm__("        movw _registers+56, %fs");
+__asm__("        movw _registers+60, %gs");
+__asm__("        movl _registers+36, %eax");
+__asm__("        pushl %eax");  /* saved eflags */
+__asm__("        movl _registers+40, %eax");
+__asm__("        pushl %eax");  /* saved cs */
+__asm__("        movl _registers+32, %eax");
+__asm__("        pushl %eax");  /* saved eip */
+__asm__("        movl _registers, %eax");
 /* use iret to restore pc and flags together so
    that trace flag works right.  */
-asm("        iret");
+__asm__("        iret");
 
-#define BREAKPOINT() asm("   int $3");
+#define BREAKPOINT() __asm__("   int $3");
 
 /* Put the error code here just in case the user cares.  */
 int gdb_i386errcode;
@@ -179,74 +179,74 @@ int gdb_i386vector = -1;
 /* GDB stores segment registers in 32-bit words (that's just the way
    m-i386v.h is written).  So zero the appropriate areas in registers.  */
 #define SAVE_REGISTERS1() \
-  asm ("movl %eax, _registers");                                   	  \
-  asm ("movl %ecx, _registers+4");			  		     \
-  asm ("movl %edx, _registers+8");			  		     \
-  asm ("movl %ebx, _registers+12");			  		     \
-  asm ("movl %ebp, _registers+20");			  		     \
-  asm ("movl %esi, _registers+24");			  		     \
-  asm ("movl %edi, _registers+28");			  		     \
-  asm ("movw $0, %ax");							     \
-  asm ("movw %ds, _registers+48");			  		     \
-  asm ("movw %ax, _registers+50");					     \
-  asm ("movw %es, _registers+52");			  		     \
-  asm ("movw %ax, _registers+54");					     \
-  asm ("movw %fs, _registers+56");			  		     \
-  asm ("movw %ax, _registers+58");					     \
-  asm ("movw %gs, _registers+60");			  		     \
-  asm ("movw %ax, _registers+62");
+  __asm__("movl %eax, _registers");                                   	  \
+  __asm__("movl %ecx, _registers+4");			  		     \
+  __asm__("movl %edx, _registers+8");			  		     \
+  __asm__("movl %ebx, _registers+12");			  		     \
+  __asm__("movl %ebp, _registers+20");			  		     \
+  __asm__("movl %esi, _registers+24");			  		     \
+  __asm__("movl %edi, _registers+28");			  		     \
+  __asm__("movw $0, %ax");							     \
+  __asm__("movw %ds, _registers+48");			  		     \
+  __asm__("movw %ax, _registers+50");					     \
+  __asm__("movw %es, _registers+52");			  		     \
+  __asm__("movw %ax, _registers+54");					     \
+  __asm__("movw %fs, _registers+56");			  		     \
+  __asm__("movw %ax, _registers+58");					     \
+  __asm__("movw %gs, _registers+60");			  		     \
+  __asm__("movw %ax, _registers+62");
 #define SAVE_ERRCODE() \
-  asm ("popl %ebx");                                  \
-  asm ("movl %ebx, _gdb_i386errcode");
+  __asm__("popl %ebx");                                  \
+  __asm__("movl %ebx, _gdb_i386errcode");
 #define SAVE_REGISTERS2() \
-  asm ("popl %ebx"); /* old eip */			  		     \
-  asm ("movl %ebx, _registers+32");			  		     \
-  asm ("popl %ebx");	 /* old cs */			  		     \
-  asm ("movl %ebx, _registers+40");			  		     \
-  asm ("movw %ax, _registers+42");                                           \
-  asm ("popl %ebx");	 /* old eflags */		  		     \
-  asm ("movl %ebx, _registers+36");			 		     \
+  __asm__("popl %ebx"); /* old eip */			  		     \
+  __asm__("movl %ebx, _registers+32");			  		     \
+  __asm__("popl %ebx");	 /* old cs */			  		     \
+  __asm__("movl %ebx, _registers+40");			  		     \
+  __asm__("movw %ax, _registers+42");                                           \
+  __asm__("popl %ebx");	 /* old eflags */		  		     \
+  __asm__("movl %ebx, _registers+36");			 		     \
   /* Now that we've done the pops, we can save the stack pointer.");  */   \
-  asm ("movw %ss, _registers+44");					     \
-  asm ("movw %ax, _registers+46");     	       	       	       	       	     \
-  asm ("movl %esp, _registers+16");
+  __asm__("movw %ss, _registers+44");					     \
+  __asm__("movw %ax, _registers+46");     	       	       	       	       	     \
+  __asm__("movl %esp, _registers+16");
 
 /* See if mem_fault_routine is set, if so just IRET to that address.  */
 #define CHECK_FAULT() \
-  asm ("cmpl $0, _mem_fault_routine");					   \
-  asm ("jne mem_fault");
+  __asm__("cmpl $0, _mem_fault_routine");					   \
+  __asm__("jne mem_fault");
 
-asm (".text");
-asm ("mem_fault:");
+__asm__(".text");
+__asm__("mem_fault:");
 /* OK to clobber temp registers; we're just going to end up in set_mem_err.  */
 /* Pop error code from the stack and save it.  */
-asm ("     popl %eax");
-asm ("     movl %eax, _gdb_i386errcode");
+__asm__("     popl %eax");
+__asm__("     movl %eax, _gdb_i386errcode");
 
-asm ("     popl %eax"); /* eip */
+__asm__("     popl %eax"); /* eip */
 /* We don't want to return there, we want to return to the function
    pointed to by mem_fault_routine instead.  */
-asm ("     movl _mem_fault_routine, %eax");
-asm ("     popl %ecx"); /* cs (low 16 bits; junk in hi 16 bits).  */
-asm ("     popl %edx"); /* eflags */
+__asm__("     movl _mem_fault_routine, %eax");
+__asm__("     popl %ecx"); /* cs (low 16 bits; junk in hi 16 bits).  */
+__asm__("     popl %edx"); /* eflags */
 
 /* Remove this stack frame; when we do the iret, we will be going to
    the start of a function, so we want the stack to look just like it
    would after a "call" instruction.  */
-asm ("     leave");
+__asm__("     leave");
 
 /* Push the stuff that iret wants.  */
-asm ("     pushl %edx"); /* eflags */
-asm ("     pushl %ecx"); /* cs */
-asm ("     pushl %eax"); /* eip */
+__asm__("     pushl %edx"); /* eflags */
+__asm__("     pushl %ecx"); /* cs */
+__asm__("     pushl %eax"); /* eip */
 
 /* Zero mem_fault_routine.  */
-asm ("     movl $0, %eax");
-asm ("     movl %eax, _mem_fault_routine");
+__asm__("     movl $0, %eax");
+__asm__("     movl %eax, _mem_fault_routine");
 
-asm ("iret");
+__asm__("iret");
 
-#define CALL_HOOK() asm("call _remcomHandler");
+#define CALL_HOOK() __asm__("call _remcomHandler");
 
 /* This function is called when a i386 exception occurs.  It saves
  * all the cpu regs in the _registers array, munges the stack a bit,
@@ -259,175 +259,175 @@ asm ("iret");
  *
  */
 extern void _catchException3();
-asm(".text");
-asm(".globl __catchException3");
-asm("__catchException3:");
+__asm__(".text");
+__asm__(".globl __catchException3");
+__asm__("__catchException3:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $3");
+__asm__("pushl $3");
 CALL_HOOK();
 
 /* Same thing for exception 1.  */
 extern void _catchException1();
-asm(".text");
-asm(".globl __catchException1");
-asm("__catchException1:");
+__asm__(".text");
+__asm__(".globl __catchException1");
+__asm__("__catchException1:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $1");
+__asm__("pushl $1");
 CALL_HOOK();
 
 /* Same thing for exception 0.  */
 extern void _catchException0();
-asm(".text");
-asm(".globl __catchException0");
-asm("__catchException0:");
+__asm__(".text");
+__asm__(".globl __catchException0");
+__asm__("__catchException0:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $0");
+__asm__("pushl $0");
 CALL_HOOK();
 
 /* Same thing for exception 4.  */
 extern void _catchException4();
-asm(".text");
-asm(".globl __catchException4");
-asm("__catchException4:");
+__asm__(".text");
+__asm__(".globl __catchException4");
+__asm__("__catchException4:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $4");
+__asm__("pushl $4");
 CALL_HOOK();
 
 /* Same thing for exception 5.  */
 extern void _catchException5();
-asm(".text");
-asm(".globl __catchException5");
-asm("__catchException5:");
+__asm__(".text");
+__asm__(".globl __catchException5");
+__asm__("__catchException5:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $5");
+__asm__("pushl $5");
 CALL_HOOK();
 
 /* Same thing for exception 6.  */
 extern void _catchException6();
-asm(".text");
-asm(".globl __catchException6");
-asm("__catchException6:");
+__asm__(".text");
+__asm__(".globl __catchException6");
+__asm__("__catchException6:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $6");
+__asm__("pushl $6");
 CALL_HOOK();
 
 /* Same thing for exception 7.  */
 extern void _catchException7();
-asm(".text");
-asm(".globl __catchException7");
-asm("__catchException7:");
+__asm__(".text");
+__asm__(".globl __catchException7");
+__asm__("__catchException7:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $7");
+__asm__("pushl $7");
 CALL_HOOK();
 
 /* Same thing for exception 8.  */
 extern void _catchException8();
-asm(".text");
-asm(".globl __catchException8");
-asm("__catchException8:");
+__asm__(".text");
+__asm__(".globl __catchException8");
+__asm__("__catchException8:");
 SAVE_REGISTERS1();
 SAVE_ERRCODE();
 SAVE_REGISTERS2();
-asm ("pushl $8");
+__asm__("pushl $8");
 CALL_HOOK();
 
 /* Same thing for exception 9.  */
 extern void _catchException9();
-asm(".text");
-asm(".globl __catchException9");
-asm("__catchException9:");
+__asm__(".text");
+__asm__(".globl __catchException9");
+__asm__("__catchException9:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $9");
+__asm__("pushl $9");
 CALL_HOOK();
 
 /* Same thing for exception 10.  */
 extern void _catchException10();
-asm(".text");
-asm(".globl __catchException10");
-asm("__catchException10:");
+__asm__(".text");
+__asm__(".globl __catchException10");
+__asm__("__catchException10:");
 SAVE_REGISTERS1();
 SAVE_ERRCODE();
 SAVE_REGISTERS2();
-asm ("pushl $10");
+__asm__("pushl $10");
 CALL_HOOK();
 
 /* Same thing for exception 12.  */
 extern void _catchException12();
-asm(".text");
-asm(".globl __catchException12");
-asm("__catchException12:");
+__asm__(".text");
+__asm__(".globl __catchException12");
+__asm__("__catchException12:");
 SAVE_REGISTERS1();
 SAVE_ERRCODE();
 SAVE_REGISTERS2();
-asm ("pushl $12");
+__asm__("pushl $12");
 CALL_HOOK();
 
 /* Same thing for exception 16.  */
 extern void _catchException16();
-asm(".text");
-asm(".globl __catchException16");
-asm("__catchException16:");
+__asm__(".text");
+__asm__(".globl __catchException16");
+__asm__("__catchException16:");
 SAVE_REGISTERS1();
 SAVE_REGISTERS2();
-asm ("pushl $16");
+__asm__("pushl $16");
 CALL_HOOK();
 
 /* For 13, 11, and 14 we have to deal with the CHECK_FAULT stuff.  */
 
 /* Same thing for exception 13.  */
 extern void _catchException13 ();
-asm (".text");
-asm (".globl __catchException13");
-asm ("__catchException13:");
+__asm__(".text");
+__asm__(".globl __catchException13");
+__asm__("__catchException13:");
 CHECK_FAULT();
 SAVE_REGISTERS1();
 SAVE_ERRCODE();
 SAVE_REGISTERS2();
-asm ("pushl $13");
+__asm__("pushl $13");
 CALL_HOOK();
 
 /* Same thing for exception 11.  */
 extern void _catchException11 ();
-asm (".text");
-asm (".globl __catchException11");
-asm ("__catchException11:");
+__asm__(".text");
+__asm__(".globl __catchException11");
+__asm__("__catchException11:");
 CHECK_FAULT();
 SAVE_REGISTERS1();
 SAVE_ERRCODE();
 SAVE_REGISTERS2();
-asm ("pushl $11");
+__asm__("pushl $11");
 CALL_HOOK();
 
 /* Same thing for exception 14.  */
 extern void _catchException14 ();
-asm (".text");
-asm (".globl __catchException14");
-asm ("__catchException14:");
+__asm__(".text");
+__asm__(".globl __catchException14");
+__asm__("__catchException14:");
 CHECK_FAULT();
 SAVE_REGISTERS1();
 SAVE_ERRCODE();
 SAVE_REGISTERS2();
-asm ("pushl $14");
+__asm__("pushl $14");
 CALL_HOOK();
 
 /*
  * remcomHandler is a front end for handle_exception.  It moves the
  * stack pointer into an area reserved for debugger use.
  */
-asm("_remcomHandler:");
-asm("           popl %eax");        /* pop off return address     */
-asm("           popl %eax");      /* get the exception number   */
-asm("		movl _stackPtr, %esp"); /* move to remcom stack area  */
-asm("		pushl %eax");	/* push exception onto stack  */
-asm("		call  _handle_exception");    /* this never returns */
+__asm__("_remcomHandler:");
+__asm__("           popl %eax");        /* pop off return address     */
+__asm__("           popl %eax");      /* get the exception number   */
+__asm__("		movl _stackPtr, %esp"); /* move to remcom stack area  */
+__asm__("		pushl %eax");	/* push exception onto stack  */
+__asm__("		call  _handle_exception");    /* this never returns */
 
 void
 _returnFromException ()
@@ -780,7 +780,7 @@ handle_exception (int exceptionVector)
   ptr = mem2hex((char *)&registers[PC], ptr, 4, 0); 	/* PC */
   *ptr++ = ';';
 
-  *ptr = '\0'
+  *ptr = '\0';
 
   putpacket (remcomOutBuffer);
 
