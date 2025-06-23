@@ -89,8 +89,9 @@
  *
  ****************************************************************************/
 
-#include <stdio.h>
 #include <string.h>
+
+#include "print.h"
 
 /************************************************************************
  *
@@ -467,6 +468,7 @@ unsigned char *getpacket(void) {
 	unsigned char xmitcsum;
 	int count;
 	char ch;
+	char print_buf[16];
 
 	while (1) {
 		/* wait around for the start character, ignore all other characters */
@@ -499,10 +501,12 @@ unsigned char *getpacket(void) {
 
 			if (checksum != xmitcsum) {
 				if (remote_debug) {
-					fprintf(
-					    stderr,
-					    "bad checksum.  My count = 0x%x, sent=0x%x. buf=%s\n",
-					    checksum, xmitcsum, buffer);
+					print_string("bad checksum.  My count = 0x");
+					print_string(itoa(checksum, print_buf, 16));
+					print_string(", sent=0x");
+					print_string(itoa(xmitcsum, print_buf, 16));
+					print_string(". buf=");
+					print_string((char *)buffer);
 				}
 				putDebugChar('-'); /* failed checksum */
 			} else {
@@ -546,13 +550,6 @@ void putpacket(unsigned char *buffer) {
 		putDebugChar(hexchars[checksum % 16]);
 
 	} while (getDebugChar() != '+');
-}
-
-void debug_error(format, parm) char *format;
-char *parm;
-{
-	if (remote_debug)
-		fprintf(stderr, format, parm);
 }
 
 /* Address of a routine to RTE to if we get a memory fault.  */
@@ -703,12 +700,18 @@ void handle_exception(int exceptionVector) {
 	int addr, length;
 	char *ptr;
 	int newPC;
+	char print_buf[16];
 
 	gdb_i386vector = exceptionVector;
 
 	if (remote_debug) {
-		printf("vector=%d, sr=0x%x, pc=0x%x\n", exceptionVector, registers[PS],
-		       registers[PC]);
+		print_string("vector=");
+		print_string(itoa(exceptionVector, print_buf, 10));
+		print_string(", sr=0x");
+		print_string(itoa(registers[PS], print_buf, 16));
+		print_string(", pc=0x");
+		print_string(itoa(registers[PC], print_buf, 16));
+		print_string("\n");
 	}
 
 	/* reply to host that an exception has occurred */
@@ -788,7 +791,7 @@ void handle_exception(int exceptionVector) {
 						mem2hex((char *)addr, remcomOutBuffer, length, 1);
 						if (mem_err) {
 							strcpy(remcomOutBuffer, "E03");
-							debug_error("memory fault");
+							print_string("memory fault");
 						}
 					}
 
@@ -809,7 +812,7 @@ void handle_exception(int exceptionVector) {
 
 							if (mem_err) {
 								strcpy(remcomOutBuffer, "E03");
-								debug_error("memory fault");
+								print_string("memory fault");
 							} else {
 								strcpy(remcomOutBuffer, "OK");
 							}
