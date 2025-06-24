@@ -11,6 +11,7 @@
 ## Serial Port
 
  - https://wiki.osdev.org/Serial_Ports
+ - https://www.sci.muni.cz/docs/pc/serport.txt
 
 ## PCI
 
