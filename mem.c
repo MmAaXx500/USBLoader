@@ -295,3 +295,15 @@ void *memcopy(void *dst, void *src, uint32_t size) {
 
 	return dst;
 }
+
+char *scopy(char *dst, char *src) {
+	uint32_t i = 0;
+	while (src[i] != '\0') {
+		dst[i] = src[i];
+		i++;
+	}
+
+	dst[i] = '\0';
+
+	return dst;
+}

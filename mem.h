@@ -44,3 +44,12 @@ void memfree(void *ptr);
  * @return Same as dst parameter
  */
 void *memcopy(void *dst, void *src, uint32_t size);
+
+/**
+ * Copy a null terminated string from `src` to `dst`.
+ *
+ * @param dst pointer to the destination string
+ * @param src pointer to the source string
+ * @return Same as dst parameter
+ */
+char* scopy(char* dst, char* src);
