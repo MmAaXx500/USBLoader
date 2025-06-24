@@ -89,9 +89,10 @@
  *
  ****************************************************************************/
 
-#include <string.h>
+#include <stddef.h>
 
 #include "gdbstub.h"
+#include "mem.h"
 #include "print.h"
 
 /************************************************************************
@@ -763,7 +764,7 @@ void handle_exception(int exceptionVector) {
 			break;
 		case 'G': /* set the value of the CPU registers - return OK */
 			hex2mem(ptr, (char *)registers, NUMREGBYTES, 0);
-			strcpy(remcomOutBuffer, "OK");
+			scopy(remcomOutBuffer, "OK");
 			break;
 		case 'P': /* set the value of a single CPU register - return OK */
 		{
@@ -772,11 +773,11 @@ void handle_exception(int exceptionVector) {
 			if (hexToInt(&ptr, &regno) && *ptr++ == '=')
 				if (regno >= 0 && regno < NUMREGS) {
 					hex2mem(ptr, (char *)&registers[regno], 4, 0);
-					strcpy(remcomOutBuffer, "OK");
+					scopy(remcomOutBuffer, "OK");
 					break;
 				}
 
-			strcpy(remcomOutBuffer, "E01");
+			scopy(remcomOutBuffer, "E01");
 			break;
 		}
 
@@ -795,13 +796,13 @@ void handle_exception(int exceptionVector) {
 #pragma GCC diagnostic pop
 
 						if (mem_err) {
-							strcpy(remcomOutBuffer, "E03");
+							scopy(remcomOutBuffer, "E03");
 							print_string("memory fault");
 						}
 					}
 
 			if (ptr) {
-				strcpy(remcomOutBuffer, "E01");
+				scopy(remcomOutBuffer, "E01");
 			}
 			break;
 
@@ -821,16 +822,16 @@ void handle_exception(int exceptionVector) {
 #pragma GCC diagnostic pop
 
 							if (mem_err) {
-								strcpy(remcomOutBuffer, "E03");
+								scopy(remcomOutBuffer, "E03");
 								print_string("memory fault");
 							} else {
-								strcpy(remcomOutBuffer, "OK");
+								scopy(remcomOutBuffer, "OK");
 							}
 
 							ptr = 0;
 						}
 			if (ptr) {
-				strcpy(remcomOutBuffer, "E02");
+				scopy(remcomOutBuffer, "E02");
 			}
 			break;
 
