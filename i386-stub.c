@@ -91,6 +91,7 @@
 
 #include <string.h>
 
+#include "gdbstub.h"
 #include "print.h"
 
 /************************************************************************
@@ -472,32 +473,32 @@ unsigned char *getpacket(void) {
 
 	while (1) {
 		/* wait around for the start character, ignore all other characters */
-		while ((ch = getDebugChar()) != '$')
+		while ((ch = (char)getDebugChar()) != '$')
 			;
 
 	retry:
 		checksum = 0;
-		xmitcsum = -1;
+		xmitcsum = (unsigned char)-1;
 		count = 0;
 
 		/* now, read until a # or end of buffer is found */
 		while (count < BUFMAX - 1) {
-			ch = getDebugChar();
+			ch = (char)getDebugChar();
 			if (ch == '$')
 				goto retry;
 			if (ch == '#')
 				break;
-			checksum = checksum + ch;
-			buffer[count] = ch;
+			checksum = (unsigned char)(checksum + ch);
+			buffer[count] = (unsigned char)ch;
 			count = count + 1;
 		}
 		buffer[count] = 0;
 
 		if (ch == '#') {
-			ch = getDebugChar();
-			xmitcsum = hex(ch) << 4;
-			ch = getDebugChar();
-			xmitcsum += hex(ch);
+			ch = (char)getDebugChar();
+			xmitcsum = (unsigned char)hex(ch) << 4;
+			ch = (char)getDebugChar();
+			xmitcsum += (unsigned char)hex(ch);
 
 			if (checksum != xmitcsum) {
 				if (remote_debug) {
@@ -514,8 +515,8 @@ unsigned char *getpacket(void) {
 
 				/* if a sequence char is present, reply the sequence ID */
 				if (buffer[2] == ':') {
-					putDebugChar(buffer[0]);
-					putDebugChar(buffer[1]);
+					putDebugChar((char)buffer[0]);
+					putDebugChar((char)buffer[1]);
 
 					return &buffer[3];
 				}
@@ -539,9 +540,9 @@ void putpacket(unsigned char *buffer) {
 		checksum = 0;
 		count = 0;
 
-		while ((ch = buffer[count])) {
+		while ((ch = (char)buffer[count])) {
 			putDebugChar(ch);
-			checksum += ch;
+			checksum += (unsigned char)ch;
 			count += 1;
 		}
 
@@ -565,9 +566,9 @@ void set_mem_err(void) { mem_err = 1; }
    that the compiler won't save any registers (if there is a fault
    to mem_fault, they won't get restored, so there better not be any
    saved).  */
-int get_char(char *addr) { return *addr; }
+char get_char(char *addr) { return *addr; }
 
-void set_char(char *addr, int val) { *addr = val; }
+void set_char(char *addr, char val) { *addr = val; }
 
 /* convert the memory pointed to by mem into hex, placing result in buf */
 /* return a pointer to the last char put in buf (null) */
@@ -580,7 +581,7 @@ char *mem2hex(char *mem, char *buf, int count, int may_fault) {
 	if (may_fault)
 		mem_fault_routine = set_mem_err;
 	for (i = 0; i < count; i++) {
-		ch = get_char(mem++);
+		ch = (unsigned char)get_char(mem++);
 		if (may_fault && mem_err)
 			return (buf);
 		*buf++ = hexchars[ch >> 4];
@@ -601,9 +602,9 @@ char *hex2mem(char *buf, char *mem, int count, int may_fault) {
 	if (may_fault)
 		mem_fault_routine = set_mem_err;
 	for (i = 0; i < count; i++) {
-		ch = hex(*buf++) << 4;
-		ch = ch + hex(*buf++);
-		set_char(mem++, ch);
+		ch = (unsigned char)hex(*buf++) << 4;
+		ch = ch + (unsigned char)hex(*buf++);
+		set_char(mem++, (char)ch);
 		if (may_fault && mem_err)
 			return (mem);
 	}
@@ -837,13 +838,14 @@ void handle_exception(int exceptionVector) {
 			/* sAA..AA   Step one instruction from AA..AA(optional) */
 		case 's':
 			stepping = 1;
+			__attribute__ ((fallthrough));
 		case 'c':
 			/* try to read optional parameter, pc unchanged if no parm */
 			if (hexToInt(&ptr, &addr))
 				registers[PC] = addr;
 
 			/* clear the trace bit */
-			registers[PS] &= 0xfffffeff;
+			registers[PS] &= (int)0xfffffeff;
 
 			/* set the trace bit if we're stepping */
 			if (stepping)
