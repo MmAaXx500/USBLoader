@@ -17,7 +17,7 @@ TEST_BASE_LDFLAGS = -m32 -g -L$(BUILD)
 SANITIZER_FLAGS := -fsanitize=address,pointer-compare,pointer-subtract,leak,undefined -fno-sanitize=alignment
 
 BUILD  := build
-SRCS   := stage1.asm stage2_entry.asm stage2.c print.c pci21.c pit.c mem.c serial.c
+SRCS   := stage1.asm stage2_entry.asm stage2.c print.c pci21.c pit.c mem.c serial.c gdbstub.c i386-stub.c
 OBJS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).o)
 DEPS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).d)
 TARGET := $(BUILD)/usbloader.bin
