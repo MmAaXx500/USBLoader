@@ -1,21 +1,25 @@
+#include <stdint.h>
+
+#include "gdbstub.h"
 #include "pci21.h"
-#include "pit.h"
 #include "print.h"
-#include "uhci.h"
-
-static void on_pci_dev_found(struct pci_dev *dev, void *userdata) {
-	(void)userdata; // unused
-
-	print_pci_dev(dev);
-	print_string("\n");
-}
+#include "mem.h"
+#include "serial.h"
 
 void stage2_main(void) {
 	init_output();
 
+	if(!serial_init_port(COM1, 115200))
+		print_string("COM1 fail");
+
 	print_string("Hello from C!\n");
 
-	pci_enumerate_devices(on_pci_dev_found, 0);
+	set_debug_traps();
+	breakpoint();
+
+	init_memory();
+
+	pci_init();
 
 	while (1)
 		;
