@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // ========================================================
 // PCI Device Command Register Masks
@@ -121,4 +122,14 @@ void pci_write_8(const struct pci_dev *dev, const uint8_t offset,
 
 typedef void (*pci_device_cb_t)(struct pci_dev *dev, void *userdata);
 
-void pci_enumerate_devices(pci_device_cb_t cb, void *userdata);
+void pci_enumerate_devices();
+
+void pci_destroy_device(struct pci_dev *dev);
+
+struct pci_dev_driver {
+	bool (*init)(struct pci_dev *dev);
+};
+
+void pci_register_driver(const struct pci_dev_driver* drv);
+
+void pci_init();
