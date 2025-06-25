@@ -93,7 +93,7 @@ static void pci_read_device(const uint8_t bus, const uint8_t device,
 			for (uint8_t bar_off = 0; bar_off < PCI_HEADER_TYPE00_BAR_ADDRS;
 			     bar_off++)
 				dev->header.u.type00.bar[bar_off] =
-				    pci_read_32(dev, 0x10 + bar_off);
+				    pci_read_32(dev, 0x10 + (uint8_t)(bar_off * 4));
 
 			dev->header.u.type00.cardbus_cis = pci_read_32(dev, 0x28);
 			dev->header.u.type00.subsystem_vid = pci_read_16(dev, 0x2c);
