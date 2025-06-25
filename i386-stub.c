@@ -771,8 +771,10 @@ void handle_exception(int exceptionVector) {
 			int regno;
 
 			if (hexToInt(&ptr, &regno) && *ptr++ == '=')
-				if (regno >= 0 && regno < NUMREGS) {
-					hex2mem(ptr, (char *)&registers[regno], 4, 0);
+				if (regno >= 0) {
+					if(regno < NUMREGS)
+						hex2mem(ptr, (char *)&registers[regno], 4, 0);
+
 					scopy(remcomOutBuffer, "OK");
 					break;
 				}
