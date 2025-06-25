@@ -161,7 +161,6 @@ read_loop:
 
 .cylinder_roll:
     xor ch, ch  ; back to cylinder 0
-    inc ch      ; next cylinder
 
 ; ========== ROLLOVERS END ==========
 
