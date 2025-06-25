@@ -52,9 +52,13 @@ $$(TEST_DEPS_$(1)):
 include $$(wildcard $$(TEST_DEPS_$(1)))
 endef
 
-all: usbloader tests
+all: usbloader usbloader.img tests
 
 usbloader: $(TARGET)
+
+usbloader.img: $(TARGET)
+	dd if=/dev/zero of=$(BUILD)/$@ bs=512 count=2880
+	dd if=$(TARGET) of=$(BUILD)/$@ bs=512 conv=notrunc
 
 $(TARGET): $(OBJS)
 	$(CC) $(OBJS) $(BASE_LDFLAGS) $(LDFLAGS) -o $(BUILD)/usbloader.elf
