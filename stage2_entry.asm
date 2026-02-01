@@ -109,11 +109,11 @@ a20_ok:
     lea esi, interrupt_map
 
 idt_loop:
-    movzx dx, [esi]
+    movzx dx, byte [esi]
     cmp di, dx
     jne .use_dummy
 
-    movzx bx, [esi + 1] ; int/trap flag
+    movzx bx, byte [esi + 1] ; int/trap flag
     mov ecx, [esi + 2]  ; handler
 
     add esi, 6  ; next INT map entry
