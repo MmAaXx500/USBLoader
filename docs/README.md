@@ -22,3 +22,11 @@
 
  - https://wiki.osdev.org/Text_Mode_Cursor
  - http://www.osdever.net/FreeVGA/vga/vga.htm
+
+## USB
+
+ - https://wiki.osdev.org/Universal_Host_Controller_Interface
+ - https://wiki.osdev.org/Universal_Serial_Bus
+ - Universal Host Controller Interface (UHCI) Design Guide Rev 1.1
+ - Universal Serial Bus Specification Rev 1.0
+ - https://forum.osdev.org/viewtopic.php?t=56675

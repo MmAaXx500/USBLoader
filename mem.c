@@ -296,6 +296,16 @@ void *memcopy(void *dst, void *src, uint32_t size) {
 	return dst;
 }
 
+void *memfill(void *buf, uint8_t byte, uint32_t size) {
+	uint8_t *dst8 = buf;
+	uint8_t *end8 = dst8 + size;
+
+	while (dst8 < end8)
+		*dst8++ = byte;
+
+	return buf;
+}
+
 char *scopy(char *dst, char *src) {
 	uint32_t i = 0;
 	while (src[i] != '\0') {

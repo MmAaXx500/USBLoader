@@ -13,8 +13,7 @@ Currently, most of the functionality is not implemented, so booting from USB is 
 So far:
 
  - Boots into 32 bit protected mode.
- - Prints PCI device information
- - Hangs
+ - Prints USB device information
 
 ## Usage
 
@@ -35,11 +34,29 @@ This will create the `build/usbloader.bin` file that you can write to a floppy a
 dd if=build/usbloader.bin of=/dev/fdX
 ```
 
-## Emulator (Bochs)
+## Emulators
+### Bochs
 
 For a minimal Bochs config you need the following in your `bochsrc` file.
 
 ```
 floppya: 1_44=build/usbloader.bin, status=inserted
 boot: floppy
+
+usb_uhci: enabled=1, port1=keyboard, options1="speed:low"
+usb_uhci: enabled=1, port2=hub, options2="speed:full,ports:2"
+```
+
+### QEMU
+
+An example command to start QEMU.
+
+```sh
+qemu-system-i386 \
+    -machine type=pc \
+    -cpu pentium3,check,enforce \
+    -m 512M \
+    -drive file=build/usbloader.img,format=raw,index=0,if=floppy \
+    -usb \
+    -device usb-kbd,bus=usb-bus.0,port=2
 ```

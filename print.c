@@ -157,3 +157,13 @@ char *itoa(int value, char *str, int base) {
 }
 
 char *itoa_once(int value, int base) { return itoa(value, itoa_fixed, base); }
+
+char *wstr_to_str(const char16_t *wstr, uint32_t wlen, char *str,
+                  uint32_t len) {
+	uint32_t l = (wlen / 2 > len) ? len : wlen / 2;
+	for (uint32_t i = 0; i < l; ++i) {
+		str[i] = (char)wstr[i];
+	}
+	str[l] = '\0';
+	return str;
+}

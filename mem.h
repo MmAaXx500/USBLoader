@@ -46,6 +46,16 @@ void memfree(void *ptr);
 void *memcopy(void *dst, void *src, uint32_t size);
 
 /**
+ * Set `size` bytes in `buf` to `byte`.
+ *
+ * @param buf pointer to the destination memory
+ * @param byte value to fill with
+ * @param size size in bytes to be filled
+ * @return Same as buf parameter
+ */
+void *memfill(void *buf, uint8_t byte, uint32_t size);
+
+/**
  * Copy a null terminated string from `src` to `dst`.
  *
  * @param dst pointer to the destination string
