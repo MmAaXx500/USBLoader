@@ -95,7 +95,7 @@ start2:
 
     ; calculate stage2 size in sectors
     mov ax, stage2_size
-    add ax, 512 + 1
+    add ax, 512 - 1
     shr ax, 9   ; div 512
     push ax     ; push stage2 size in sectors
 
