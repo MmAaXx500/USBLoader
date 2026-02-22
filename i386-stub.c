@@ -101,7 +101,7 @@
  */
 
 extern void putDebugChar(char ch); /* write a single character      */
-extern int getDebugChar(void);         /* read and return a single char */
+extern int getDebugChar(void);     /* read and return a single char */
 extern void
 exceptionHandler(int exception_number,
                  void *exception_address); /* assign an exception handler   */
@@ -150,7 +150,8 @@ int registers[NUMREGS];
 
 #define STACKSIZE 10000
 int remcomStack[STACKSIZE / sizeof(int)];
-__attribute__((used)) static int *stackPtr = &remcomStack[STACKSIZE / sizeof(int) - 1];
+__attribute__((used)) static int *stackPtr =
+    &remcomStack[STACKSIZE / sizeof(int) - 1];
 
 /***************************  ASSEMBLY CODE MACROS *************************/
 /* 									   */
@@ -497,7 +498,7 @@ unsigned char *getpacket(void) {
 
 		if (ch == '#') {
 			ch = (char)getDebugChar();
-			xmitcsum = (unsigned char)hex(ch) << 4;
+			xmitcsum = (unsigned char)(hex(ch) << 4);
 			ch = (char)getDebugChar();
 			xmitcsum += (unsigned char)hex(ch);
 
@@ -603,7 +604,7 @@ char *hex2mem(char *buf, char *mem, int count, int may_fault) {
 	if (may_fault)
 		mem_fault_routine = set_mem_err;
 	for (i = 0; i < count; i++) {
-		ch = (unsigned char)hex(*buf++) << 4;
+		ch = (unsigned char)(hex(*buf++) << 4);
 		ch = ch + (unsigned char)hex(*buf++);
 		set_char(mem++, (char)ch);
 		if (may_fault && mem_err)
@@ -772,7 +773,7 @@ void handle_exception(int exceptionVector) {
 
 			if (hexToInt(&ptr, &regno) && *ptr++ == '=')
 				if (regno >= 0) {
-					if(regno < NUMREGS)
+					if (regno < NUMREGS)
 						hex2mem(ptr, (char *)&registers[regno], 4, 0);
 
 					scopy(remcomOutBuffer, "OK");
