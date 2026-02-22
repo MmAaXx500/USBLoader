@@ -1,6 +1,8 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
+#include "idt.h"
 #include "io.h"
 #include "pit.h"
 
@@ -58,6 +60,9 @@
 
 static volatile bool timer_int_fired = false;
 
+bool pit_timer_isr(uint8_t, void *);
+static struct idt_int_handler int_h = {&pit_timer_isr, NULL, NULL};
+
 void sleep(uint32_t ms) {
 	uint32_t pit_ms = ms;
 	uint16_t divisor;
@@ -85,6 +90,13 @@ void sleep(uint32_t ms) {
 	}
 }
 
-// called from assembly
-// INT0 timer interrupt ISR
-void pit_isr_timer(void) { timer_int_fired = true; }
+void pit_init(void) { idt_reg_handler(32, &int_h); }
+
+bool pit_timer_isr(uint8_t int_n, void *userdata) {
+	(void)int_n, (void)userdata;
+	if (!timer_int_fired) {
+		timer_int_fired = true;
+		return true;
+	}
+	return false;
+}

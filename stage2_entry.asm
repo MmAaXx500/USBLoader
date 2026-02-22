@@ -71,8 +71,8 @@ ICW4_INTEL equ 0x1
 
 extern stage2_main
 
-; pit.c PIT timer interrupt handler
-extern pit_isr_timer
+; idt.c common handler
+extern idt_common_isr
 
 protected_init:
     mov ax, 0x10
@@ -192,15 +192,40 @@ idt_loop:
     outb PIC1_COMMAND, PIC_EOI
 %endmacro
 
+%macro call_common_isr 1
+    push %1
+    call idt_common_isr
+    add esp, 4
+%endmacro
+
+%macro isr_exception 1-2
+isr_%1:
+    pusha
+    call_common_isr %1
+    popa
+%ifidni %2, ec
+    add esp, 4 ; pop error code
+%endif
+    iret
+%endmacro
+
+%macro isr_int 1-2
+isr_%1:
+    pusha
+    call_common_isr %1
+%ifnidni %2, nmi
+    pic_send_eoi %1-32
+%endif
+    popa
+    iret
+%endmacro
+
 isr_dummy:
     iret
 
 isr_dummy_ec:
     add esp, 4  ; pop error code
     iret
-
-isr_doublefault:
-    hlt
 
 isr_dummy_pic_slave:
     pusha
@@ -216,13 +241,54 @@ isr_dummy_pic_master:
     popa
     iret
 
-isr_timer:
-    pusha
-    call pit_isr_timer
-    pic_send_eoi 0
-    popa
-    iret
+; 1: int num
+; 2: 0: no ec, 1: ec
+; 3: 0: int, 1: fault
+; 4: 0: PIC int, 1: nmi
+%macro isr_gen 4
+%if %3 == 1 && %2 == 0
+isr_exception %1
+%elif %3 == 1 && %2 == 1
+isr_exception %1, ec
+%elif %3 == 0 && %4 == 0
+isr_int %1
+%elif %3 == 0 && %4 == 1
+isr_int %1, nmi
+%endif
+%endmacro
 
+%macro int_gen_loop 1
+%assign i 0
+%rep 48
+    %assign ec 0
+    %assign fault 0
+    %assign nmi 0
+
+    %if i != 15 && (i <= 21 || i >= 32)
+        ; has error code?
+        %if i == 8 || (i >= 10 && i <= 14) || i == 17 || i == 21
+        %assign ec 1
+        %endif
+
+        ; is fault?
+        %if i <= 21 && i != 2
+        %assign fault 1
+        %endif
+
+        ; is nmi?
+        %if i == 2
+        %assign nmi 1
+        %endif
+
+        ; call generator
+        %1 i, ec, fault, nmi
+    %endif
+
+    %assign i i+1
+%endrep
+%endmacro
+
+int_gen_loop isr_gen
 
 ; ========== Interrupt handlers end ==========
 
@@ -277,15 +343,19 @@ PicRemap:
 
     ret
 
+; 1: int num
+; 2: 0: no ec, 1: ec
+; 3: 0: int, 1: fault
+; 4: 0: PIC int, 1: nmi
+%macro intmap_gen 4
+db %1, %3
+dd isr_%1
+%endmacro
 
 ; Map interrupts to handlers
 ; format: interrupt no (byte), int=0/fault=1 (byte), handler pointer (32bit ptr)
 interrupt_map:
-    db 8, 1
-    dd isr_doublefault
-
-    db 32, 1
-    dd isr_timer
+    int_gen_loop intmap_gen
 
     db 0, 0
     dd 0
