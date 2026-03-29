@@ -74,6 +74,9 @@ extern stage2_main
 ; idt.c common handler
 extern idt_common_isr
 
+extern bss_start
+extern bss_size
+
 protected_init:
     mov ax, 0x10
     mov ds, ax
@@ -180,6 +183,13 @@ idt_loop:
     lidt [idtr]
 
     sti
+
+    ; zero init BSS for stage2 (stage2_entry's BSS is separate)
+    mov ecx, bss_start
+    mov edi, ecx
+    mov ecx, bss_size
+    mov al, 0
+    rep stosb
 
     call stage2_main
 

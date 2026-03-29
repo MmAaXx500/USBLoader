@@ -10,6 +10,7 @@ SECTIONS {
     .rodata_s2 : { *(.rodata*) }
     stage2_end = .;
     stage2_size = stage2_end - stage2_start;
+    .bss_s2e (NOLOAD) : { stage2_entry.o(.bss) }
     .bss_s2 (NOLOAD) : {
         *(.bss)
         . = ALIGN(16);
@@ -18,6 +19,8 @@ SECTIONS {
         heap_end = .;
         heap_size = heap_end - heap_start;
     }
+    bss_start = ADDR(.bss_s2);
+    bss_size = SIZEOF(.bss_s2);
 
     /DISCARD/ : {
         *(.comment)
