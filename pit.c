@@ -55,48 +55,34 @@
 // ========================================================
 
 #define PIT_HZ     1193182
-// largest whole ms
-#define PIT_MAX_MS (1000 * 65536 / PIT_HZ)
+#define PIT_1000HZ 1193
 
-static volatile bool timer_int_fired = false;
+static volatile uint32_t timer_ms_left = 0;
 
 bool pit_timer_isr(uint8_t, void *);
 static struct idt_int_handler int_h = {&pit_timer_isr, NULL, NULL};
 
 void sleep(uint32_t ms) {
-	uint32_t pit_ms = ms;
-	uint16_t divisor;
-
-	while (ms > 0) {
-		if (ms > PIT_MAX_MS) {
-			pit_ms = PIT_MAX_MS;
-			ms -= PIT_MAX_MS;
-		} else {
-			pit_ms = ms;
-			ms = 0;
-		}
-
-		divisor = (uint16_t)(PIT_HZ * pit_ms / 1000);
-
-		outb(PIT_TCW,
-		     TCW_COUNTER_0 | TCW_RW_LSB_MSB | TCW_MODE_INT_ON_0 | TCW_BINARY);
-
-		outb(PIT_COUNTER_0, (uint8_t)(divisor & 0xff)); // LSB
-		outb(PIT_COUNTER_0, (uint8_t)(divisor >> 8));   // MSB
-
-		timer_int_fired = false;
-		while (!timer_int_fired)
-			__asm__("hlt");
-	}
+	timer_ms_left = ms;
+	while (timer_ms_left != 0)
+		__asm__("hlt");
 }
 
-void pit_init(void) { idt_reg_handler(32, &int_h); }
+void pit_init(void) {
+	uint16_t divisor = (uint16_t)PIT_1000HZ;
+	idt_reg_handler(32, &int_h);
+
+	outb(PIT_TCW,
+	     TCW_COUNTER_0 | TCW_RW_LSB_MSB | TCW_MODE_RATE_GEN | TCW_BINARY);
+
+	outb(PIT_COUNTER_0, (uint8_t)(divisor & 0xff)); // LSB
+	outb(PIT_COUNTER_0, (uint8_t)(divisor >> 8));   // MSB
+}
 
 bool pit_timer_isr(uint8_t int_n, void *userdata) {
 	(void)int_n, (void)userdata;
-	if (!timer_int_fired) {
-		timer_int_fired = true;
-		return true;
+	if (timer_ms_left > 0) {
+		timer_ms_left--;
 	}
 	return false;
 }
