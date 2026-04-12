@@ -17,6 +17,8 @@
 static uint8_t curs_row = 0;
 static uint8_t curs_col = 0;
 
+static char itoa_fixed[64];
+
 static void move_vga_cursor(uint8_t column, uint8_t row) {
 	uint16_t pos = (uint16_t)(row * VGA_WIDTH + column);
 
@@ -87,7 +89,7 @@ void print_string(const char *string) {
 	move_vga_cursor(curs_col, curs_row);
 }
 
-void print_pci_dev(const struct pci_dev* pci_dev){
+void print_pci_dev(const struct pci_dev *pci_dev) {
 	char buf[8];
 	print_string(itoa(pci_dev->bus, buf, 10));
 	print_string(":");
@@ -153,3 +155,5 @@ char *itoa(int value, char *str, int base) {
 	}
 	return rc;
 }
+
+char *itoa_once(int value, int base) { return itoa(value, itoa_fixed, base); }

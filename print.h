@@ -5,8 +5,10 @@ struct pci_dev;
 
 void print_string(const char *string);
 
-void print_pci_dev(const struct pci_dev* pci_dev);
+void print_pci_dev(const struct pci_dev *pci_dev);
 
 void init_output(void);
 
 char *itoa(int value, char *str, int base);
+
+char *itoa_once(int value, int base);
