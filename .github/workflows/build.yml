@@ -22,6 +22,8 @@ jobs:
       - name: Run tests
         run: |
           for test_bin in build/test_*; do
-            echo "Running $test_bin"
-            ./$test_bin
+            if [ -x "$test_bin" ]; then
+              echo "Running $test_bin"
+              ./$test_bin
+            fi
           done
