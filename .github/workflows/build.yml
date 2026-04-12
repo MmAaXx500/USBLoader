@@ -1,0 +1,27 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+        opt: [-O0, -O1, -O2, -O3, -Os]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Tools
+        run: sudo apt-get update && sudo apt-get install -y nasm gcc-multilib clang
+      - name: Build with ${{ matrix.compiler }} and ${{ matrix.opt }}
+        run: |
+          make clean
+          make CC=${{ matrix.compiler }} CFLAGS=${{ matrix.opt }} TEST_CFLAGS=${{ matrix.opt }}
+      - name: Run tests
+        run: |
+          for test_bin in build/test_*; do
+            echo "Running $test_bin"
+            ./$test_bin
+          done
