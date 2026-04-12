@@ -12,7 +12,7 @@ jobs:
         compiler: [gcc, clang]
         opt: [-O0, -O1, -O2, -O3, -Os]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: Install Tools
         run: sudo apt-get update && sudo apt-get install -y nasm gcc-multilib clang
       - name: Build with ${{ matrix.compiler }} and ${{ matrix.opt }}
