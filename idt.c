@@ -26,7 +26,7 @@ void idt_reg_handler(uint8_t int_n, struct idt_int_handler *h) {
 }
 
 void idt_common_isr(uint8_t int_n) {
-	if (!int_handlers[int_n]) {
+	if (int_n >= MAX_ISR_CNT || !int_handlers[int_n]) {
 		// no registered handler
 		print_string("No handler for INT ");
 		print_string(itoa_once(int_n, 10));
