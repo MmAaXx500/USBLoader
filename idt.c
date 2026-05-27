@@ -42,6 +42,12 @@ void idt_common_isr(uint8_t int_n) {
 		}
 		elem = elem->_next;
 	} while (elem);
+
+	// Do not warn for the timer INT
+	if (int_n == 32) {
+		return;
+	}
+
 	print_string("INT ");
 	print_string(itoa_once(int_n, 10));
 	print_string(" not handled\n");
