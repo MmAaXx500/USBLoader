@@ -158,12 +158,12 @@ idt_loop:
     jmp .idt_set
 
 .use_dummy_pic_slave:
-    mov bx, 1
+    mov bx, 0 ; interrupt gate
     lea ecx, isr_dummy_pic_slave
     jmp .idt_set
 
 .use_dummy_pic_master:
-    mov bx, 1
+    mov bx, 0 ; interrupt gate
     lea ecx, isr_dummy_pic_master
     jmp .idt_set
 
