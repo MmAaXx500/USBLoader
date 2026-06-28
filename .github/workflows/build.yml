@@ -22,7 +22,7 @@ jobs:
       - name: Run tests
         run: |
           for test_bin in build/test_*; do
-            if [ -x "$test_bin" ]; then
+            if [ -f "$test_bin" ] && [ -x "$test_bin" ]; then
               echo "Running $test_bin"
               ./$test_bin
             fi
