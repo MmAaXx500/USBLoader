@@ -38,7 +38,7 @@ extern stage2_size
     push bx
     push dx
     mov al, %1
-    PrintCharCom
+    ;PrintCharCom
     PrintCharBios
     pop dx
     pop bx
@@ -213,7 +213,7 @@ LogString:
     lodsb
     or al, al
     jz .done
-    PrintCharCom
+    ;PrintCharCom
     PrintCharBios
     jmp .loop
 

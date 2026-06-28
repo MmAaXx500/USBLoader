@@ -2,8 +2,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "drivers/io/io.h"
 #include "idt.h"
-#include "io.h"
 #include "pit.h"
 
 // ========================================================

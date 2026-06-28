@@ -2,7 +2,7 @@
 
 #include "mem.h"
 #include "mem_internal.h"
-#include "unity.h"
+#include "test/unity.h"
 
 #define TEST_MEM_SIZE 256
 

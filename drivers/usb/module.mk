@@ -1,0 +1,1 @@
+SRCS += drivers/usb/uhci.c

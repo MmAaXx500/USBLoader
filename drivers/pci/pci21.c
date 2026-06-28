@@ -1,6 +1,6 @@
 #include "pci21.h"
-#include "io.h"
-#include "mem.h"
+#include "drivers/io/io.h"
+#include "mem/mem.h"
 
 // PCI Configuration Space Access Mechanism #1 IO locations
 #define PCI_CONFIG_ADDRESS 0xcf8
@@ -59,11 +59,7 @@ void pci_write_8(const struct pci_dev *dev, const uint8_t offset,
 
 static void pci_read_device(const uint8_t bus, const uint8_t device) {
 	uint8_t max_funcs = 1;
-	struct pci_dev tmp_dev = {
-		.bus = bus,
-		.device = device,
-		.func = 0
-	};
+	struct pci_dev tmp_dev = {.bus = bus, .device = device, .func = 0};
 
 	const uint16_t vid = pci_read_16(&tmp_dev, 0);
 	if (vid == 0xffff)

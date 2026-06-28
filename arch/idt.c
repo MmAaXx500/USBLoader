@@ -1,7 +1,7 @@
 #include <stddef.h>
 
+#include "drivers/display/print.h"
 #include "idt.h"
-#include "print.h"
 
 #define MAX_ISR_CNT 48 // CPU exceptions + remaped PIC
 

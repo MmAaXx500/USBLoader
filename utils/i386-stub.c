@@ -91,9 +91,9 @@
 
 #include <stddef.h>
 
+#include "drivers/display/print.h"
 #include "gdbstub.h"
-#include "mem.h"
-#include "print.h"
+#include "mem/mem.h"
 
 /************************************************************************
  *

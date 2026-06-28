@@ -1,12 +1,12 @@
 #include <stdint.h>
 
-#include "gdbstub.h"
-#include "mem.h"
-#include "pci21.h"
-#include "pit.h"
-#include "print.h"
-#include "serial.h"
-#include "uhci.h"
+#include "arch/pit.h"
+#include "drivers/display/print.h"
+#include "drivers/pci/pci21.h"
+#include "drivers/serial/serial.h"
+#include "drivers/usb/uhci.h"
+#include "mem/mem.h"
+#include "utils/gdbstub.h"
 
 void stage2_main(void) {
 	init_output();

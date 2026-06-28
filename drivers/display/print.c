@@ -1,6 +1,6 @@
 #include "print.h"
-#include "io.h"
-#include "pci21.h"
+#include "drivers/io/io.h"
+#include "drivers/pci/pci21.h"
 
 #define VGA_WIDTH  80
 #define VGA_HEIGHT 25

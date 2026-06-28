@@ -4,14 +4,14 @@
 #include <uchar.h>
 #include <wchar.h>
 
-#include "idt.h"
-#include "io.h"
-#include "mem.h"
-#include "pci21.h"
-#include "pit.h"
-#include "print.h"
-#include "uhci.h"
-#include "utils.h"
+#include "arch/idt.h"
+#include "arch/pit.h"
+#include "drivers/display/print.h"
+#include "drivers/io/io.h"
+#include "drivers/pci/pci21.h"
+#include "drivers/usb/uhci.h"
+#include "mem/mem.h"
+#include "utils/utils.h"
 
 // LEGACY SUPPORT REGISTER 16bit
 #define PCI_HOFF_UHCI_LEGSUP 0xc0

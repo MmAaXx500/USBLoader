@@ -17,10 +17,8 @@ TEST_BASE_LDFLAGS = -m32 -g -L$(BUILD)
 SANITIZER_FLAGS := -fsanitize=address,pointer-compare,pointer-subtract,leak,undefined -fno-sanitize=alignment
 
 BUILD  := build
-SRCS   := stage1.asm stage2_entry.asm stage2.c print.c pci21.c pit.c mem.c serial.c gdbstub.c i386-stub.c idt.c uhci.c
-OBJS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).o)
-DEPS   := $(foreach f,$(SRCS), $(BUILD)/$(basename $(notdir $(f))).d)
 TARGET := $(BUILD)/usbloader.bin
+TARGET_IMG := $(BUILD)/usbloader.img
 TEST_TARGETS :=
 
 ifeq ($(TEST_SAN), true)
@@ -33,9 +31,10 @@ endif
 #   1: target name
 #   2: souce file list
 define test_target
+TEST_BUILD_$(1) := $$(BUILD)/$(1).build
 TEST_SRCS_$(1) := $(2)
-TEST_OBJS_$(1) := $$(foreach f,$$(TEST_SRCS_$(1)),$(BUILD)/$$(basename $$(notdir $(1).$$(f))).o)
-TEST_DEPS_$(1) := $$(foreach f,$$(TEST_SRCS_$(1)),$(BUILD)/$$(basename $$(notdir $(1).$$(f))).d)
+TEST_OBJS_$(1) := $$(foreach f,$$(TEST_SRCS_$(1)),$$(TEST_BUILD_$(1))/$$(basename $$(f)).o)
+TEST_DEPS_$(1) := $$(foreach f,$$(TEST_SRCS_$(1)),$$(TEST_BUILD_$(1))/$$(basename $$(f)).d)
 
 TEST_TARGETS += $(1)
 
@@ -44,8 +43,9 @@ $(1): $$(BUILD)/$(1)
 $$(BUILD)/$(1): $$(TEST_OBJS_$(1))
 	$$(TEST_LD) $$(TEST_BASE_LDFLAGS) $$(TEST_LDFLAGS) -o $$@ $$(TEST_OBJS_$(1))
 
-$$(BUILD)/$(1).%.o: %.c $$(BUILD)/$(1).%.d | $$(BUILD)
-	$$(TEST_CC) $$(TEST_BASE_CFLAGS) $$(TEST_CFLAGS) $$(CDEPFLAGS) -c $$< -o $$@
+$$(TEST_BUILD_$(1))/%.o: %.c $$(TEST_BUILD_$(1))/%.d
+	@mkdir -p $$(@D)
+	$$(TEST_CC) $$(TEST_BASE_CFLAGS) -I. $$(TEST_CFLAGS) $$(CDEPFLAGS) -c $$< -o $$@
 
 $$(TEST_DEPS_$(1)):
 
@@ -56,36 +56,43 @@ all: usbloader usbloader.img tests
 
 usbloader: $(TARGET)
 
-usbloader.img: $(TARGET)
-	dd if=/dev/zero of=$(BUILD)/$@ bs=512 count=2880
-	dd if=$(TARGET) of=$(BUILD)/$@ bs=512 conv=notrunc
+usbloader.img: $(TARGET_IMG)
 
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) $(BASE_LDFLAGS) $(LDFLAGS) -o $(BUILD)/usbloader.elf
-	$(OBJCOPY) -O binary $(BUILD)/usbloader.elf $@
+$(TARGET_IMG): $(TARGET)
+	dd if=/dev/zero of=$(TARGET_IMG) bs=512 count=2880
+	dd if=$(TARGET) of=$(TARGET_IMG) bs=512 conv=notrunc
 
-$(BUILD)/%.o: %.asm $(BUILD)/%.d | $(BUILD)
+$(BUILD)/%.o: %.asm $(BUILD)/%.d 
 # NASM produces a dep (.d) file that is newer than the .o
 # and that causes unnecessary reassembly every time.
 # `touch`-ing the result after assembly to update the modification time
-	$(NASM) $(BASE_NASMFLAGS) $(NASMFLAGS) $(NASMDEPFLAGS) $< -o $@
+	@mkdir -p $(@D)
+	$(NASM) $(BASE_NASMFLAGS) -I$(<D) $(NASMFLAGS) $(NASMDEPFLAGS) $< -o $@
 	touch $@
 
-$(BUILD)/%.o: %.c $(BUILD)/%.d | $(BUILD)
-	$(CC) $(BASE_CFLAGS) $(CFLAGS) $(CDEPFLAGS) -c $< -o $@
-
-$(BUILD):
-	mkdir -p $@
+$(BUILD)/%.o: %.c $(BUILD)/%.d
+	@mkdir -p $(@D)
+	$(CC) $(BASE_CFLAGS) -I. $(CFLAGS) $(CDEPFLAGS) -c $< -o $@
 
 clean:
 	rm -rf $(BUILD)
 
+include arch/module.mk
+include boot/module.mk
+include drivers/module.mk
+include mem/module.mk
+include utils/module.mk
+
+OBJS := $(foreach f,$(SRCS), $(BUILD)/$(basename $(f)).o)
+DEPS := $(foreach f,$(SRCS), $(BUILD)/$(basename $(f)).d)
+
+$(TARGET): $(OBJS)
+	$(CC) $^ $(BASE_LDFLAGS) $(LDFLAGS) -o $(BUILD)/usbloader.elf
+	$(OBJCOPY) -O binary $(BUILD)/usbloader.elf $@
+
 $(DEPS):
-
 include $(wildcard $(DEPS))
-
-$(eval $(call test_target,test_mem,unity.c mem_test.c mem.c))
 
 tests: $(TEST_TARGETS)
 
-.PHONY: all clean
+.PHONY: all clean usbloader usbloader.img tests

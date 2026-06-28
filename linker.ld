@@ -1,16 +1,16 @@
 SECTIONS {
     . = 0x7c00;
-    .text_s1 : AT(0) { stage1.o(.text) }
+    .text_s1 : AT(0) { boot/stage1.o(.text) }
 
     . = 0x8000;
     stage2_start = .;
-    .text_s2e : AT(512) { stage2_entry.o(.text) }
+    .text_s2e : AT(512) { boot/stage2_entry.o(.text) }
     .text_s2 : { *(.text) }
     .data_s2 : { *(.data) }
     .rodata_s2 : { *(.rodata*) }
     stage2_end = .;
     stage2_size = stage2_end - stage2_start;
-    .bss_s2e (NOLOAD) : { stage2_entry.o(.bss) }
+    .bss_s2e (NOLOAD) : { boot/stage2_entry.o(.bss) }
     .bss_s2 (NOLOAD) : {
         *(.bss)
         . = ALIGN(16);

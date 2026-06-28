@@ -1,5 +1,5 @@
-#include "idt.h"
-#include "serial.h"
+#include "arch/idt.h"
+#include "drivers/serial/serial.h"
 
 static const serial_port gdb_port = COM1;
 

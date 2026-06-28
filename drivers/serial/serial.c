@@ -1,6 +1,6 @@
-#include "serial.h"
-#include "io.h"
-#include "pit.h"
+#include "drivers/serial/serial.h"
+#include "arch/pit.h"
+#include "drivers/io/io.h"
 
 #define RECV_BUF(com)         ((uint16_t)(com + 0))
 #define SEND_BUF(com)         ((uint16_t)(com + 0))
